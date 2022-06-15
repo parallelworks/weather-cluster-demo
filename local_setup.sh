@@ -12,7 +12,7 @@ cat <<EOF > srun_setup_script.sh
 #!/bin/bash
 cp -riv /var/lib/pworks/conus_12km $HOME/
 cd $HOME/conus_12km/
-WRF_ROOT=$(spack location -i wrf%intel)/test/em_real/
+WRF_ROOT=\$(spack location -i wrf%intel)/test/em_real/
 ln -s $WRF_ROOT* .
 
 EOF
