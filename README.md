@@ -16,7 +16,7 @@ reported by AWS in Smith et al. (2020).
 
 Installation instructions for building images are in `*_install`. The worker images
 that have WRF installed are currently:
-+ AWS:     pending
++ AWS:     ami-01feb827df057289c
 + GCE:     pending
 + Azure:   pending
 + AtNorth: pending
@@ -94,5 +94,4 @@ how run times and run costs change (e.g. we start with
 Here are the details for installing the software necessary for
 running the WRF model.  This software is installed locally on
 the image and will be saved into a new image.
-
 
