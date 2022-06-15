@@ -1,0 +1,19 @@
+# This is a Spack Environment file.
+#
+# It describes a set of packages to be installed, along with
+# configuration settings.
+spack:
+  concretization: together
+  packages:
+    all:
+      compiler: [intel]
+      providers:
+        mpi: [intel-oneapi-mpi+external-libfabric%intel]
+  specs:
+  - intel-oneapi-compilers
+  - intel-oneapi-mpi+external-libfabric%intel
+  - jasper%intel
+  - netcdf-c%intel
+  - netcdf-fortran%intel
+  - parallel-netcdf%intel
+  view: true
