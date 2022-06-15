@@ -1,4 +1,4 @@
-B#! /bin/bash
+#! /bin/bash
 #===========================
 # By default, gcc 4.8.5 is 
 # installed on Centos7.

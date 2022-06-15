@@ -38,4 +38,3 @@ cat <<EOF > $HOME/.hluresfile
 *windowWorkstationClass*wkWidth  : 1000
 *windowWorkstationClass*wkHeight : 1000
 EOF
-
