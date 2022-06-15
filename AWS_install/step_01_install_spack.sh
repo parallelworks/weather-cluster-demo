@@ -15,8 +15,11 @@ echo Downloading Spack...
 git clone -b v0.18.0 -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
 
 echo Set up Spack environment...
-echo "export SPACK_ROOT="${SPACK_ROOT} >> $HOME/.bashrc
-echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> $HOME/.bashrc
+# An alternative for local testing is $HOME/.bashrc
+# Here, this is added to /etc/bashrc so it is persistent
+# in the image and $HOME/.bashrc sources /etc/bashrc.
+sudo echo "export SPACK_ROOT="${SPACK_ROOT} >> /etc/bashrc
+sudo echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> /etc/bashrc
 source $HOME/.bashrc
 
 echo Install some dependencies...
