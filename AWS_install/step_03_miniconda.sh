@@ -25,3 +25,6 @@ conda install -y -c conda-forge parsl
 conda install -y requests
 conda install -y ipykernel
 conda install -y -c anaconda jinja2
+
+# Allow all subsequent users to view this Miniconda:
+chmod --recursive a+rwx miniconda3

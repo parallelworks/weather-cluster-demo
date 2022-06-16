@@ -12,4 +12,4 @@ rm -f wrf_simulation_CONUS12km.tar.gz
 
 # The decompression step above put the
 # files in /var/lib/pworks/conus_12km
-chmod a+rwx conus_12km
+chmod --recursive a+rwx conus_12km

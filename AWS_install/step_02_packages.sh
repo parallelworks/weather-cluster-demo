@@ -10,6 +10,9 @@
 # Lists available packages
 spack list -d oneAPI
 
+# Need to add gcc compiler (specified as external package in step_01)
+spack compiler find
+
 # Required for nearly all packages - will
 # apply patches as needed automatically.
 spack install patchelf
@@ -49,3 +52,6 @@ spack install -j 18 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi+external-
 # This is done in step_03 along with installing
 # miniconda, ipykernel, parsl, etc. in case we
 # want to have other workflow tooling in place.
+
+# Finally, ensure all subsequent users can use Spack:
+chmod --recursive a+rwx $SPACK_ROOT

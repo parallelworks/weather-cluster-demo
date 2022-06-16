@@ -9,7 +9,7 @@
 echo Setting up SPACK_ROOT...
 export SPACK_ROOT=/var/lib/pworks/spack
 sudo mkdir -p $SPACK_ROOT
-sudo chmod a+rwx $SPACK_ROOT
+sudo chmod --recursive a+rwx $SPACK_ROOT
 
 echo Downloading Spack...
 git clone -b v0.18.0 -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
@@ -25,6 +25,13 @@ source $HOME/.bashrc
 echo Install some dependencies...
 pip3 install botocore==1.23.46 boto3==1.20.46
 
+#=================================================
+# Mirror is suggested by Smith et al. (2020) but
+# all files in this mirror assume using Amazon Linux
+# and we are using Centos.  The mirror's list overwrites
+# the default list, so all installs fail because of the
+# OS mismatch. Proceed with default mirror only.
+#================================================
 #echo Adding mirror and GPG keys...
 #spack mirror add aws-hpc-weather s3://aws-hpc-weather/spack/
 #spack buildcache keys --install --trust --force
@@ -32,7 +39,6 @@ pip3 install botocore==1.23.46 boto3==1.20.46
 # The packages here differ slightly from the ones listed
 # in Smith et al. (2020) because they are using a slightly
 # newer base image for their AWS PCluster.
-if [ 1 == 1 ]; then
 echo Configuring external packages...
 cat <<EOF > $SPACK_ROOT/etc/spack/packages.yaml
 packages:
@@ -69,8 +75,15 @@ packages:
         buildable: False
 EOF
 
-fi
-
+#================================
+# This is the suggestion for 
+# a WRF "manual install" from Smith et al. (2020).
+# Keep disabled for now.
+# An alternative for manual install is:
+# https://pratiman-91.github.io/2020/09/01/Installing-WRF-from-scratch-in-an-HPC-using-Intel-Compilers.html
+# (but there is no suggestion for AWS EFA)
+# WRF in this case is installed in step_02_packages.sh.
+#===============================
 if [ 1 == 0 ]; then
 cat <<EOF > wrf_build.yaml
 # This is a Spack Environment file.
