@@ -10,10 +10,8 @@ cd $HOME
 
 cat <<EOF > srun_setup_script.sh
 #!/bin/bash
-cp -riv /var/lib/pworks/conus_12km $HOME/
-cd $HOME/conus_12km/
-WRF_ROOT=\$(spack location -i wrf%intel)/test/em_real/
-ln -s $WRF_ROOT* .
+echo 'source ~/.bashrc; rsync -av /var/lib/pworks/conus_12km $HOME/; cd $HOME/conus_12km/; spack loca\
+tion -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."' | scl enable devtoolset-7 bash   
 
 EOF
 
