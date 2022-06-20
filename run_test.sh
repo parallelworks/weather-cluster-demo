@@ -33,7 +33,7 @@ chmod u+x srun_forecast.sh
 # Run it!
 # Use srun instead of sbatch because execution halts
 # locally "here" and we'll know when it is done.
-srun --job-name=WRF --output=conus-%j.out --exclusive --nodes=11 --ntasks-per-node=3 srun_forecast.sh
+srun --job-name=WRF --output=conus-%J.%t.out --exclusive --nodes=16 --ntasks-per-node=2 srun_forecast.sh
 
 # Clean up
 #rm -f srun_forecast.sh
