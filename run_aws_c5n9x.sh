@@ -19,15 +19,16 @@
 #                             8x6 means 4 quantity 48CPU instances.
 # 2. We do not need to module load libfabric-aws since the node
 #    is able to run fi_info by default.
+# 3. Change the output logging from %j to %J.%t
+# 4. Remove #SBATCH --exclusive to sidestep current login issues.
 cd $HOME/conus_12km/
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
 #SBATCH --job-name=WRF
-#SBATCH --output=conus-%j.out
+#SBATCH --output=conus-%J.%t.out
 #SBATCH --nodes=11
 #SBATCH --ntasks-per-node=3
-#SBATCH --exclusive
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
 spack load intel-oneapi-mpi
