@@ -29,6 +29,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --output=conus-%J.%t.out
 #SBATCH --nodes=11
 #SBATCH --ntasks-per-node=3
+#SBATCH --exclusive
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
 spack load intel-oneapi-mpi
