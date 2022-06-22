@@ -27,8 +27,8 @@ cat > slurm-wrf-conus12km.sh <<EOF
 
 #SBATCH --job-name=WRF
 #SBATCH --output=conus-%J.%t.out
-#SBATCH --nodes=11
-#SBATCH --ntasks-per-node=3
+#SBATCH --nodes=16
+#SBATCH --ntasks-per-node=2
 #SBATCH --exclusive
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
