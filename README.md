@@ -26,6 +26,8 @@ runs in two steps:
 1. `*_setup.sh` - stage key files to a shared space. `local_setup.sh` uses `$HOME`, more sophisticated clusters could use `/shared` or `/lustre` or `/contrib`.
 2. `run_<cloud>_<worker-instance-type>.sh` - issue the sbatch commands for this cloud/instance-type combination. On PW, it is recommended to create a cluster resource using the `<cloud>_<instance-type>` naming convention.
 
+*NOTE:* If the custom image for the workflow is not available, `<cloud>_install/build_head_node_<cloud>.sh` can be run before step 1.
+
 # AWS
 
 ## Configure cluster
