@@ -5,6 +5,13 @@
 # of tasks per node).
 #============================
 
+# Source .bashrc in case local_setup.sh
+# was run in an automated way immediately
+# before this script (the changes in .bashrc
+# from local_setup.sh are sourced in its
+# child shell, but not the parent).
+source ~/.bashrc
+
 # Move data to home with local.setup.sh
 # (Not done automatically here in case
 #  cluster is persistent.)
