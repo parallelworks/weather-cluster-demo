@@ -1,0 +1,21 @@
+on:
+  release:
+    types: [published]
+    branches:
+      - development
+
+jobs:
+  test-pw-workflow:
+    runs-on: ubuntu-latest
+    name: test-pw-workflow-canary
+    steps:
+      - name: run-workflow-canary
+        id: run-canary
+        uses: parallelworks/test-workflow-action@v5.0.3
+        with:
+          pw-user-host: 'canary.parallel.works'
+          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-user: 'Kristopher.Booker'
+          resource-pool-names: 'awsweatherdemo'
+          workflow-name: 'weather-cluster-demo'
+          workflow-parameters: '{"inputs|whost": "awsweatherdemo.clusters.pw","inputs|rundir": "~/weather-cluster-demo/","cicd|env_cond|branch": "development","cicd|env_cond|merge": "true","cicd|merge": "true"}'
