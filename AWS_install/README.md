@@ -61,7 +61,7 @@ sudo yum install -y devtoolset-7
 sudo yum install -y wget git git-lfs screen zip unzip bzip2 ksh csh time psmisc gcc cmake ImageMagick gdal-python libgeotiff-devel libtiff-devel wgrib wgrib2 python39-setuptools python39-devel python34-pip nco wgrib wgrib2 ncview lapack-devel blas-devel pip awscli gcc glibc glibc-common gcc-c++ kernel-devel gc gcc++ gcc-c++ nco wgrib wgrib2 ncview bc nc jq libXScrnSaver alsa-lib xorg-x11-server-Xorg  gtk+-devel gtk2-devel
 
 # Make  the staging ground
-export $STAGING_DIR=/var/lib/pworks
+export STAGING_DIR=/var/lib/pworks
 sudo mkdir -p $STAGING_DIR
 sudo chmod a+rwx $STAGING_DIR
 cd $STAGING_DIR
@@ -71,7 +71,7 @@ wget  https://www2.mmm.ucar.edu/wrf/OnLineTutorial/wrf_cloud/wrf_simulation_CONU
 wget https://storage.googleapis.com/wrf_weather_cluster_demo/spack_aws_wrf.tgz
 wget https://storage.googleapis.com/wrf_weather_cluster_demo/miniconda3.tgz
 
-# Unpack the two largest tarballs
+# Unpack the largest tarballs
 # (The model boundary conditions is relatively small
 # and needs to end up in $HOME, which is not persistent
 # so keep it in its archive.)
