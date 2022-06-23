@@ -16,7 +16,7 @@ reported by AWS in Smith et al. (2020).
 
 Installation instructions for building images are in `*_install`. The worker images
 that have WRF installed are currently:
-+ AWS:     ami-01feb827df057289c
++ AWS:     ami-023d6b1b905010ad4
 + GCE:     pending
 + Azure:   pending
 + AtNorth: pending
