@@ -24,10 +24,9 @@ source ~/.bashrc
 #    This particular model needs 2 x 16 x 6 = 4 x 8 x 6 = 192 threads.
 #    In the two cases above, 16x6 means 2 quantity 96CPU instances and
 #                             8x6 means 4 quantity 48CPU instances.
-# 2. We do not need to module load libfabric-aws since the node
-#    is able to run fi_info by default.
+# 2. We do not need to module load libfabric-aws or any EFA env vars
+#    since this is on GCE.  GCE gvnic env vars are autoconfigured.
 # 3. Change the output logging from %j to %J.%t
-# 4. Remove #SBATCH --exclusive to sidestep current login issues.
 cd $HOME/conus_12km/
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
@@ -38,23 +37,17 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --ntasks-per-node=4
 #SBATCH --exclusive
 
-export I_MPI_OFI_LIBRARY_INTERNAL=0
-spack load libfabric
 spack load intel-oneapi-mpi
 spack load wrf
-#module load libfabric-aws
 wrf_exe=$(spack location -i wrf)/run/wrf.exe
 set -x
 ulimit -s unlimited
 ulimit -a
 
 export OMP_NUM_THREADS=6
-export FI_PROVIDER=efa
-export I_MPI_FABRICS=ofi
-export I_MPI_OFI_PROVIDER=efa
 export I_MPI_PIN_DOMAIN=omp
 export KMP_AFFINITY=compact
-export I_MPI_DEBUG=4
+export I_MPI_DEBUG=6
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
 EOF
