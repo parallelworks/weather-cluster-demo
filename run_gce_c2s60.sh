@@ -39,6 +39,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --exclusive
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
+spack load libfabric
 spack load intel-oneapi-mpi
 spack load wrf
 #module load libfabric-aws
@@ -62,4 +63,4 @@ EOF
 sbatch slurm-wrf-conus12km.sh
 
 # Clean up
-rm -f slurm-wrf-conus12km.sh
+#rm -f slurm-wrf-conus12km.sh
