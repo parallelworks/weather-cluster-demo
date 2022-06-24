@@ -7,13 +7,13 @@ on:
 jobs:
   test-pw-workflow:
     runs-on: ubuntu-latest
-    name: test-pw-workflow-canary
+    name: test-pw-workflow-beta
     steps:
-      - name: run-workflow-canary
-        id: run-canary
+      - name: run-workflow-beta
+        id: run-beta
         uses: parallelworks/test-workflow-action@v5.0.3
         with:
-          pw-user-host: 'canary.parallel.works'
+          pw-user-host: 'beta.parallel.works'
           pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'awsweatherdemo'
