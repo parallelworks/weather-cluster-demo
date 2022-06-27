@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     name: test-pw-workflow-beta
     steps:
-      - name: run-workflow-beta
-        id: run-beta
+      - name: run-workflow-beta-awsweatherdemo
+        id: run-beta-awsweatherdemo
         uses: parallelworks/test-workflow-action@v5.0.3
         with:
           pw-user-host: 'beta.parallel.works'
@@ -18,4 +18,14 @@ jobs:
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'awsweatherdemo'
           workflow-name: 'weather-cluster-demo'
-          workflow-parameters: '{"inputs|whost": "awsweatherdemo.clusters.pw","inputs|rundir": "~/weather-cluster-demo/","cicd|env_cond|branch": "development","cicd|env_cond|merge": "true","cicd|merge": "true"}'
+          workflow-parameters: '{"inputs|runscript": "run_aws_c5n9x.sh","inputs|whost": "awsweatherdemo.clusters.pw","inputs|rundir": "~/weather-cluster-demo/","cicd|env_cond|branch": "development","cicd|env_cond|merge": "false","cicd|merge": "false"}'
+      - name: run-workflow-beta-gcpweatherdemo
+        id: run-beta-gcpweatherdemo
+        uses: parallelworks/test-workflow-action@v5.0.3
+        with:
+          pw-user-host: 'beta.parallel.works'
+          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-user: 'Kristopher.Booker'
+          resource-pool-names: 'gcpweatherdemo'
+          workflow-name: 'weather-cluster-demo'
+          workflow-parameters: '{"inputs|runscript": "run_gce_c2s60.sh","inputs|whost": "gcpweatherdemo.clusters.pw","inputs|rundir": "~/weather-cluster-demo/","cicd|env_cond|branch": "development","cicd|env_cond|merge": "false","cicd|merge": "false"}'
