@@ -18,7 +18,7 @@ source ~/.bashrc
 
 # Create launch script
 # Modifications wrt version posted by Smith et al. (2020):
-# 1. Adjust --nodes and --ntasks-per-node to match number 
+# 1. Adjust --nodes and --ntasks-per-node to match number
 #    of CPU = vCPU/2 on instance. For example, 2 x 16 = 4 x 8.
 #    The number of CPU available should be >= --ntasks-per-node x OMP_NUM_THREADS
 #    This particular model needs 2 x 16 x 6 = 4 x 8 x 6 = 192 threads.
@@ -36,7 +36,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --nodes=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --exclusive
-
+#SBATCH --wait
 spack load intel-oneapi-mpi
 spack load wrf
 wrf_exe=$(spack location -i wrf)/run/wrf.exe
