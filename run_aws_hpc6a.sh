@@ -19,7 +19,11 @@
 #                             8x6 means 4 quantity 48CPU instances.
 # 2. We do not need to module load libfabric-aws since the node
 #    is able to run fi_info by default.
-cd $HOME/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 

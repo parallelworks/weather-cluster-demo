@@ -28,7 +28,11 @@ source ~/.bashrc
 #    is able to run fi_info by default.
 # 3. Change the output logging from %j to %J.%t
 # 4. Remove #SBATCH --exclusive to sidestep current login issues.
-cd $HOME/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 

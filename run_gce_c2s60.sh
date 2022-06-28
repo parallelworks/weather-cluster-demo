@@ -27,7 +27,11 @@ source ~/.bashrc
 # 2. We do not need to module load libfabric-aws or any EFA env vars
 #    since this is on GCE.  GCE gvnic env vars are autoconfigured.
 # 3. Change the output logging from %j to %J.%t
-cd $HOME/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
