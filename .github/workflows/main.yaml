@@ -13,7 +13,7 @@ jobs:
         id: run-beta-atnorth
         uses: parallelworks/test-workflow-action@v5.0.3
         with:
-          pw-user-host: 'centos@82.221.147.121'
+          pw-user-host: 'beta.parallel.works'
           pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'atnorth'
