@@ -60,7 +60,6 @@ EOF
 # Run it!
 echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
-echo "Done!"
 
 # Clean up
 #rm -f slurm-wrf-conus12km.sh
