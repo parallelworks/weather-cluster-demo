@@ -41,6 +41,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --ntasks-per-node=4
 #SBATCH --exclusive
 #SBATCH --wait
+
 spack load intel-oneapi-mpi
 spack load wrf
 wrf_exe=$(spack location -i wrf)/run/wrf.exe
@@ -57,7 +58,7 @@ time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
 EOF
 
 # Run it!
-echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
+echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
 echo "Done!"
 
