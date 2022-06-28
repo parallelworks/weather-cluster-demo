@@ -29,3 +29,13 @@ jobs:
           resource-pool-names: 'gcpweatherdemo'
           workflow-name: 'weather-cluster-demo'
           workflow-parameters: '{"inputs|runscript": "run_gce_c2s60.sh","inputs|whost": "gcpweatherdemo.clusters.pw","inputs|rundir": "~/weather-cluster-demo/","cicd|env_cond|branch": "development","cicd|env_cond|merge": "false","cicd|merge": "false"}'
+      - name: run-workflow-beta-atnorth
+        id: run-beta-atnorth
+        uses: parallelworks/test-workflow-action@v5.0.3
+        with:
+          pw-user-host: 'centos@82.221.147.121'
+          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-user: 'Kristopher.Booker'
+          resource-pool-names: 'atnorth'
+          workflow-name: 'weather-cluster-demo'
+          workflow-parameters: '{"inputs|runscript": "run_atnorth.sh","inputs|whost": "centos@82.221.147.121","inputs|rundir": "/shared","cicd|env_cond|branch": "development","cicd|env_cond|merge": "false","cicd|merge": "false"}'
