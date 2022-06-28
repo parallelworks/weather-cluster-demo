@@ -64,7 +64,9 @@ time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
 EOF
 
 # Run it!
+echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
+echo "Done!"
 
 # Clean up
 #rm -f slurm-wrf-conus12km.sh
