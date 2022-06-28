@@ -33,26 +33,51 @@ cd $HOME
 #rm -f srun_setup_script.sh
 
 #===========================
-echo Unpacking model data...
-cp /var/lib/pworks/wrf_simulation_CONUS12km.tar.gz ./
-tar -xzf wrf_simulation_CONUS12km.tar.gz
-rm -f wrf_simulation_CONUS12km.tar.gz
-chmod --recursive a+rwx conus_12km
+if [ -d "/opt/rh/devtoolset-8" ] 
+then
+    echo "Running atNorth."
+    cd /shared/wrf/
+    echo Unpacking model data...
+    tar -xzf wrf_simulation_CONUS12km.tar.gz
 
-echo Setting up spack...
-echo "export SPACK_ROOT=/var/lib/pworks/spack" >> ~/.bashrc
-echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> ~/.bashrc
+    # Already done since $HOME is persistent
+    #echo Setting up spack...
+    #echo "export SPACK_ROOT=/shared/wrf/spack" >> ~/.bashrc
+    #echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> ~/.bashrc
+    source ~/.bashrc
+else
+    echo "Running on AWS|GCE|Azure."
+    echo Unpacking model data...
+    cp /var/lib/pworks/wrf_simulation_CONUS12km.tar.gz ./
+    tar -xzf wrf_simulation_CONUS12km.tar.gz
+    rm -f wrf_simulation_CONUS12km.tar.gz
+
+    echo Setting up spack...
+    echo "export SPACK_ROOT=/var/lib/pworks/spack" >> ~/.bashrc
+    echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> ~/.bashrc
+fi
+chmod --recursive a+rwx conus_12km
 source ~/.bashrc
 
 #=========================
 # Load compilers
 #=========================
-echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-7 bash                                                                               
+if [ -d "/opt/rh/devtoolset-8" ]
+then
+    # This is not necessary atNorth since $HOME is persistent.
+    # (Done once and does not need to be repeated.  It does need to 
+    # be repeated for the worker nodes, their $HOME are separate
+    # and also persistent.) Repeating it here does not have
+    # any impact.
+    echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-8 bash
+else
+    echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-7 bash                                                                               
+fi
 
 #=========================
 # Make links within run dir
 #=========================
-cd ~/conus_12km/                                                                                                          
+cd conus_12km/                                                                                                          
 spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."
 
 # As noted by Smith et al. (2020):
