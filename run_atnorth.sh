@@ -39,7 +39,6 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=16
 #SBATCH --exclusive
-#SBATCH --wait
 
 spack load intel-oneapi-mpi
 spack load wrf

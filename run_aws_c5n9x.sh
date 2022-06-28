@@ -41,7 +41,6 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --nodes=16
 #SBATCH --ntasks-per-node=2
 #SBATCH --exclusive
-#SBATCH --wait
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
 spack load intel-oneapi-mpi
