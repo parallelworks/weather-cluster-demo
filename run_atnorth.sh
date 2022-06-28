@@ -53,6 +53,7 @@ export KMP_AFFINITY=compact
 export I_MPI_DEBUG=6
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
+echo $? > wrf.exit.code
 EOF
 
 # Run it!
