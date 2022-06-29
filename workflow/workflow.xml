@@ -1,0 +1,27 @@
+<tool id='Kristopher.Booker_hello_cluster_ssh' name='Kristopher.Booker_hello_cluster_ssh'>
+  <command interpreter='bash'>main.sh</command>
+  <inputs>
+    <section name='inputs' type='section' conditional='[object Object]' title='Inputs' expanded='true'>
+    <param name='runscript' label='Run script' type='text' value='run_aws_c5n9x.sh' help='Name of the script to run from inside the repository directory after local_setup.sh' width='50%_none'>
+    </param>
+    <param name='whost' label='Workflow host' type='text' value='awsweatherdemo.clusters.pw' help='Use PoolName.clusters.pw for cloud clusters or user@host_ip otherwise' width='50%_none'>
+    </param>
+    <param name='rundir' label='Run directory' type='text' value='~/weather-cluster-demo/' help='Path to the scratch job directory on the host. Make sure the compute nodes have access to this directory.' width='50%_none'>
+    </param>
+    </section>
+    <section name='cicd' type='section' conditional='[object Object]' title='CI/CD' expanded='false'>
+    <conditional name="env_cond">
+        <param name='branch' type='select' label='Select Github branch' width='50%_none' optional='false' multiple='false'>
+        <option value="main" selected="true">main</option>
+        <option value="development">development</option>
+        </param>
+        <when value="development">
+              <param name='merge' type='boolean' truevalue='Yes' falsevalue='No' checked='No' label='Merge development to main if run is successful' width='50%' float='right'>
+              </param>
+        </when>
+        </conditional>
+    </section>
+  </inputs>
+  <outputs>
+  </outputs>
+</tool>
