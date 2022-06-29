@@ -28,7 +28,11 @@ source ~/.bashrc
 #    is able to run fi_info by default.
 # 3. Change the output logging from %j to %J.%t
 # 4. Remove #SBATCH --exclusive to sidestep current login issues.
-cd $HOME/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
@@ -37,7 +41,6 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --nodes=16
 #SBATCH --ntasks-per-node=2
 #SBATCH --exclusive
-#SBATCH --wait
 
 export I_MPI_OFI_LIBRARY_INTERNAL=0
 spack load intel-oneapi-mpi
@@ -57,9 +60,11 @@ export KMP_AFFINITY=compact
 export I_MPI_DEBUG=4
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
+echo $? > wrf.exit.code
 EOF
 
 # Run it!
+echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
 
 # Clean up

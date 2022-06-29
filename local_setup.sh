@@ -10,7 +10,8 @@
 # worker nodes on the cluster.
 #========================
 
-cd $HOME
+# AV: Commenting this out to run from wherever the repo is being launched. Use workflow to specify this location.
+#cd $HOME
 
 #==========================
 # Old version
@@ -24,7 +25,7 @@ cd $HOME
 #spack load intel-oneapi-compilers; \
 #spack compiler find; \
 #spack unload; \
-#spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."' | scl enable devtoolset-7 bash   
+#spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."' | scl enable devtoolset-7 bash
 #
 #EOF
 
@@ -33,12 +34,15 @@ cd $HOME
 #rm -f srun_setup_script.sh
 
 #===========================
-if [ -d "/opt/rh/devtoolset-8" ] 
+if [ -d "/opt/rh/devtoolset-8" ]
 then
     echo "Running atNorth."
-    cd /shared/wrf/
+    # AV: Commenting this out to run from wherever the repo is being launched. Use workflow to specify this location.
+    # cd /shared/wrf/
     echo Unpacking model data...
-    tar -xzf wrf_simulation_CONUS12km.tar.gz
+    # AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+    #tar -xzf wrf_simulation_CONUS12km.tar.gz
+    tar -xzf /shared/wrf/wrf_simulation_CONUS12km.tar.gz
 
     # Already done since $HOME is persistent
     #echo Setting up spack...
@@ -65,23 +69,23 @@ source ~/.bashrc
 if [ -d "/opt/rh/devtoolset-8" ]
 then
     # This is not necessary atNorth since $HOME is persistent.
-    # (Done once and does not need to be repeated.  It does need to 
+    # (Done once and does not need to be repeated.  It does need to
     # be repeated for the worker nodes, their $HOME are separate
     # and also persistent.) Repeating it here does not have
     # any impact.
     echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-8 bash
 else
-    echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-7 bash                                                                               
+    echo 'spack compiler find; spack load intel-oneapi-compilers; spack compiler find; spack unload;' | scl enable devtoolset-7 bash
 fi
 
 #=========================
 # Make links within run dir
 #=========================
-cd conus_12km/                                                                                                          
+cd conus_12km/
 spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."
 
 # As noted by Smith et al. (2020):
-# "Please be aware there is a namelist.input in the current 
-# directory that you do not want to overwrite. The link command 
-# will return the following error, which is safe to ignore. 
+# "Please be aware there is a namelist.input in the current
+# directory that you do not want to overwrite. The link command
+# will return the following error, which is safe to ignore.
 # ln: failed to create symbolic link ‘./namelist.input’: File exists

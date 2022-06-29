@@ -27,7 +27,11 @@ source ~/.bashrc
 # 2. We do not need to module load libfabric-aws or any EFA env vars
 #    since this is on GCE.  GCE gvnic env vars are autoconfigured.
 # 3. Change the output logging from %j to %J.%t
-cd $HOME/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
@@ -36,7 +40,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --nodes=8
 #SBATCH --ntasks-per-node=4
 #SBATCH --exclusive
-#SBATCH --wait
+
 spack load intel-oneapi-mpi
 spack load wrf
 wrf_exe=$(spack location -i wrf)/run/wrf.exe
@@ -50,9 +54,11 @@ export KMP_AFFINITY=compact
 export I_MPI_DEBUG=6
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
+echo $? > wrf.exit.code
 EOF
 
 # Run it!
+echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
 
 # Clean up

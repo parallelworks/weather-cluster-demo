@@ -18,7 +18,7 @@ source ~/.bashrc
 
 # Create launch script
 # Modifications wrt version posted by Smith et al. (2020):
-# 1. Adjust --nodes and --ntasks-per-node to match number 
+# 1. Adjust --nodes and --ntasks-per-node to match number
 #    of CPU = vCPU/2 on instance. For example, 2 x 16 = 4 x 8.
 #    The number of CPU available should be >= --ntasks-per-node x OMP_NUM_THREADS
 #    This particular model needs 2 x 16 x 6 = 4 x 8 x 6 = 192 threads.
@@ -27,7 +27,10 @@ source ~/.bashrc
 # 2. We do not need to module load libfabric-aws or any EFA env vars
 #    since this is on GCE.  GCE gvnic env vars are autoconfigured.
 # 3. Change the output logging from %j to %J.%t
-cd /shared/wrf/conus_12km/
+
+# AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
+# cd /shared/wrf/conus_12km/
+cd conus_12km
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
@@ -50,9 +53,11 @@ export KMP_AFFINITY=compact
 export I_MPI_DEBUG=6
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
+echo $? > wrf.exit.code
 EOF
 
 # Run it!
+echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
 
 # Clean up
