@@ -16,15 +16,17 @@ reported by AWS in Smith et al. (2020).
 
 Installation instructions for building images are in `*_install`. The worker images
 that have WRF installed are currently:
-+ AWS:     ami-023d6b1b905010ad4
-+ GCE:     pending
++ AWS:     ami-04f457714fd1e594c
++ GCE:     pw-sfg3-wrf-cluster-demo-04
 + Azure:   pending
-+ AtNorth: pending
++ AtNorth: Clusters are persistent so no need for custom images.
+
+The setup script in `general_install` is designed to be run in the PW Cloud Snapshot image builder.  It is currently **experimental** and initial tests suggest that it should generate images that work on AWS, GCE, and Azure clusters.  A user just needs to pick which cloud they prefer from the drop-down box.  PW V2 clusters autoconfigure the networking fabric necessary for MPI for each cloud (e.g. EFA for AWS, gVNIC for GCE) via MPI environment variables.  Therefore, it shouldn't be necessary to specify which networking fabric is necessary for each cloud. However, further testing is currently necessary to ensure that this works over a wide range of MPI applications.
 
 The model itself, once installed and the cluster is running, 
 runs in two steps:
-1. `*_setup.sh` - stage key files to a shared space. `local_setup.sh` uses `$HOME`, more sophisticated clusters could use `/shared` or `/lustre` or `/contrib`.
-2. `run_<cloud>_<worker-instance-type>.sh` - issue the sbatch commands for this cloud/instance-type combination. On PW, it is recommended to create a cluster resource using the `<cloud>_<instance-type>` naming convention.
+1. `*_setup.sh` - stage key files to a shared space. `local_setup.sh` uses `$HOME`, depending on cluster setup, one could use `/shared` or `/lustre` or `/contrib`.
+2. `run_<cloud>_<worker-instance-type>.sh` - issue the sbatch commands for this cloud/instance-type combination.
 
 *NOTE:* If the custom image for the workflow is not available, `<cloud>_install/build_head_node_<cloud>.sh` can be run before step 1.
 
@@ -93,7 +95,12 @@ how run times and run costs change (e.g. we start with
 
 ## Install software
 
-Here are the details for installing the software necessary for
-running the WRF model.  This software is installed locally on
-the image and will be saved into a new image.
+The details for installing the software necessary for
+running the WRF model are in `AWS_install`.  This software
+is installed locally on the image and will be saved into
+a new image.
 
+# GCE and atNorth
+
+The process for GCE and atNorth broadly follow AWS.  Each
+has its own `_install` directory with specific details.
