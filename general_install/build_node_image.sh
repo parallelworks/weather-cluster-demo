@@ -9,7 +9,7 @@
 # to use install_dir, below.
 #==============================
 
-install_dir=/var/lib/pworks
+install_dir=${HOME}/wrf
 
 #==============================
 echo Install newer version of gcc...
@@ -39,8 +39,8 @@ echo Set up Spack environment...
 # An alternative for local testing is $HOME/.bashrc
 # Here, this is added to /etc/bashrc so it is persistent
 # in the image and $HOME/.bashrc sources /etc/bashrc.
-sudo echo "export SPACK_ROOT="${SPACK_ROOT} >> /etc/bashrc
-sudo echo "source \$SPACK_ROOT/share/spack/setup-env.sh" >> /etc/bashrc
+sudo -s eval echo export SPACK_ROOT=${SPACK_ROOT}" >> "/etc/bashrc
+sudo -s eval echo source ${SPACK_ROOT}/share/spack/setup-env.sh" >> "/etc/bashrc
 source $HOME/.bashrc
 
 #==============================

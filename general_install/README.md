@@ -58,3 +58,22 @@ this case, it is recommended that `install_dir` be set to
 `/shared`, `/contrib`, or `/lustre`) since none of those
 locations are stored with the image so any changes in those locations
 will **not** be stored in the image.
+
+## Troubleshooting
+
+### GCE
+
+To check if Google gVNIC is running, try:
+```
+sudo lshw -class network
+```
+And compare the output to the [example here](https://cloud.google.com/compute/docs/networking/using-gvnic).
+
+### AWS
+
+Notes about EFA here.
+
+### Azure
+
+Notes about Infiniband here.
+
