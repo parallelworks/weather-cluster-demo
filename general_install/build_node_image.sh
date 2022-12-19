@@ -70,15 +70,19 @@ echo "        buildable: False" >> $spack_packages
 #==============================
 echo Installing spack packages...
 #==============================
+# spack install -j nproc is set to -j 30
+# because 30 CPU is the typical minimum
+# amount of CPU for high-speed networking
+# instance types.
 echo 'source ~/.bashrc; \
 spack compiler find; \
-spack install patchelf; \
-spack install intel-oneapi-compilers; \
+spack install -j 30 patchelf; \
+spack install -j 30 intel-oneapi-compilers; \
 spack load intel-oneapi-compilers; \
 spack compiler find; \
 spack unload; \
-spack install intel-oneapi-mpi%intel; \
-spack install wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
+spack install -j 30 intel-oneapi-mpi%intel; \
+spack install -j 30 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
 
 #==============================
 echo Cache a copy of model data...
