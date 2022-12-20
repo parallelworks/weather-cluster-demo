@@ -69,6 +69,18 @@ sudo lshw -class network
 ```
 And compare the output to the [example here](https://cloud.google.com/compute/docs/networking/using-gvnic).
 
+Depending on the [version of IntelMPI](https://cloud.google.com/architecture/best-practices-for-using-mpi-on-compute-engine#use_intel_mpi) 
+that is installed, the `I_MPI_FABRICS` environment 
+variable needs to be set to either `shm:tcp` (for 2018 
+and earlier IntelMPI) or  `ofi_rxm;tcp` (for 2019 and 
+newer IntelMPI).  The software install script `build_node_image.sh`
+does NOT set this since it is designed to be universal
+across all clouds and this would impact AWS/Azure configs,
+below.  Instead, this environment variable is set in the 
+weather model launch script. Note that `build_node_image.sh`
+pins IntelMPI to a 2022 version, so we need to use 
+`I_MPI_FABRICS=ofi_rxm;tcp` when launching jobs.
+
 ### AWS
 
 Notes about EFA here.

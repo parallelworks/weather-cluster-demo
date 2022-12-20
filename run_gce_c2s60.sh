@@ -32,6 +32,11 @@ source ~/.bashrc
 # cd /shared/wrf/conus_12km/
 cd conus_12km
 
+# This env var needs to match the version
+# of IntelMPI.  For the general_install,
+# IntelMPI is 2022, see https://cloud.google.com/architecture/best-practices-for-using-mpi-on-compute-engine#use_intel_mpi
+export I_MPI_FABRICS="ofi_rxm;tcp"
+
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
 
