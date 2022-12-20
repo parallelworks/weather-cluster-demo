@@ -12,12 +12,35 @@ particular cloud.
 
 The `build_node_image.sh` script here should be able to build
 WRF spack archives that work on AWS, GCE, and Azure.  **This has
-yet to be tested fully.**
+yet to be tested fully.** This script will install some critical
+system level tools, Spack, and then compile WRF and all 
+dependencies from scratch taking about 80 minutes end-to-end.
+
+The [AWS NWP tutorial](https://weather.hpcworkshops.com/03-wrf/01-spack-install-wrf.html) 
+provides pre-compiled binaries only for AWS-Linux from their 
+own repo so it runs over a few minutes. To recreate this process,
+the Spack stack created by `build_node_image.sh` can be saved as
+a `.tar.gz`, e.g.:
+
+```
+tar -czvf wrf.tar.gz ./wrf
+```
+
+After it is downloaded and unpacked to another cluster, it can be
+used on another cluster **provided that it is put in the same
+location as it was on the cluster that created it** - otherwise,
+there will be path issues with Spack and Conda. This process takes
+only a few minutes (7GB file transfer + decompression).  The system
+level dependencies that are nearly identical to the setup at the
+beginning of `build_node_image.sh` are handled on new cluster 
+with `deploy_to_node.sh` but this script will not work with all
+users because on many clusters only `$HOME` is shared (unless 
+`/lustre` or `/contrib` are enabled).
 
 ## Usage
 
 Please note that there is one key **HARD-CODED** parameter in
-this script: `install_dir`. This directory is the base location
+`build_node_image.sh`: `install_dir`. This directory is the base location
 where software (i.e. the Spack-stack) and data (i.e. the
 boundary conditions of the weather model). are stored. Normally,
 this variable would be a command-line input to the script
