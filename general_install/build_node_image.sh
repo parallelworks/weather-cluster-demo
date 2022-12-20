@@ -10,6 +10,7 @@
 #==============================
 
 install_dir=${HOME}/wrf
+#install_dir=/var/lib/pworks
 
 #==============================
 echo Install newer version of gcc...
@@ -93,9 +94,34 @@ tar -xzf wrf_simulation_CONUS12km.tar.gz
 rm -f wrf_simulation_CONUS12km.tar.gz
 
 #==============================
+echo Install local Miniconda...
+#==============================
+miniconda_loc=${install_dir}/miniconda
+wget https://repo.anaconda.com/miniconda/Miniconda3-py39_4.9.2-Linux-x86_64.sh
+chmod u+x Miniconda3-py39_4.9.2-Linux-x86_64.sh
+./Miniconda3-py39_4.9.2-Linux-x86_64.sh -b -p $miniconda_loc
+rm -f Miniconda3-py39_4.9.2-Linux-x86_64.sh
+
+# (Do not run conda init as part of install)
+source ${miniconda_loc}/etc/profile.d/conda.sh
+conda create --name parsl_py39
+conda activate parsl_py39
+
+# Install Pyferret first because its installer
+# searches only for a Python version x.x and
+# breaks when Pyton is 3.10 or more because it
+# thinks the system is at Python 3.1.
+conda install -y -c conda-forge pyferret
+conda install -y -c conda-forge parsl
+conda install -y requests
+conda install -y ipykernel
+conda install -y -c anaconda jinja2
+
+#==============================
 echo Set permissions...
 #==============================
 sudo chmod --recursive a+rwx $install_dir
 
 echo Completed building image
 # It is essential to have a newline at the end of this file!
+
