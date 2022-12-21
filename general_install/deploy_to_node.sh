@@ -62,4 +62,14 @@ echo Set permissions...
 #==============================
 sudo chmod --recursive a+rwx $install_dir
 
+#==============================
+echo Make links in model data...
+#==============================
+# This is the only step in local_setup.sh
+# not already done in the Spack stack
+# or here.
+cd $install_dir
+cd conus_12km
+spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."
+
 echo Completed deploying to cluster
