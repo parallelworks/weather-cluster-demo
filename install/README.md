@@ -106,9 +106,9 @@ pins IntelMPI to a 2022 version, so we need to use
 
 ### AWS
 
-Notes about EFA here.
+Set `I_MPI_FABRICS=efa`.
 
 ### Azure
 
-Notes about Infiniband here.
+Set `I_MPI_FABRICS=ofi_rxm;tcp`.
 

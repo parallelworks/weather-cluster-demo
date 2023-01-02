@@ -1,4 +1,5 @@
 # weather-cluster-demo
+
 Run a medium-sized weather forecast on a cluster.  This workflow is
 similar to
 [weather-forecast-demo](https://github.com/parallelworks/weather-forecast-demo)
@@ -14,14 +15,26 @@ reported by AWS in Smith et al. (2020).
 
 # Overview
 
-Installation instructions for building images are in `*_install`. The worker images
-that have WRF installed are currently:
+Installation instructions for installing WRF on the cluster are in `install`. The 
+PW Cloud Snapshot tool creates cloud head node/workder node images
+that have WRF installed.  The list of up-to-date images is currently:
 + AWS:     ami-04f457714fd1e594c
 + GCE:     pw-sfg3-wrf-cluster-demo-04
 + Azure:   pending
 + AtNorth: Clusters are persistent so no need for custom images.
 
-The setup script in `general_install` is designed to be run in the PW Cloud Snapshot image builder.  It is currently **experimental** and initial tests suggest that it should generate images that work on AWS, GCE, and Azure clusters.  A user just needs to pick which cloud they prefer from the drop-down box.  PW V2 clusters autoconfigure the networking fabric necessary for MPI for each cloud (e.g. EFA for AWS, gVNIC for GCE) via MPI environment variables.  Therefore, it shouldn't be necessary to specify which networking fabric is necessary for each cloud. However, further testing is currently necessary to ensure that this works over a wide range of MPI applications.
+The setup script in `install` is designed to be run in the PW Cloud Snapshot image builder. 
+It was designed to generate images that work on AWS, GCE, and Azure clusters.  A user just 
+needs to pick which cloud they prefer from the drop-down box.  PW V2 clusters autoconfigure 
+the networking fabric necessary for MPI for each cloud (e.g. EFA for AWS, gVNIC for GCE) 
+via MPI environment variables.  Therefore, it shouldn't be necessary to specify which 
+networking fabric is necessary for each cloud aside from setting the `I_MPI_FABRICS` variable
+in the `run_<cloud>_<instance_type>.sh` scripts provided in the top level of this repository.
+While this approach works with a medium-sized weather model, further testing is underway to 
+ensure that this works over a wide range of MPI applications.
+
+Cloud-specific installation scripts (older code written at the first stages of this project)
+are retained within the `install/<location>_install` directories.
 
 The model itself, once installed and the cluster is running, 
 runs in two steps:
