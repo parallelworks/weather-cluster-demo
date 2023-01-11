@@ -14,7 +14,7 @@ jobs:
         uses: parallelworks/test-workflow-action@v5.1.0
         with:
           pw-user-host: 'beta.parallel.works'
-          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-api-key: ${{ secrets.SFGARY_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'atnorth'
           workflow-name: 'weather-cluster-demo'
@@ -24,7 +24,7 @@ jobs:
         uses: parallelworks/test-workflow-action@v5.1.0
         with:
           pw-user-host: 'beta.parallel.works'
-          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-api-key: ${{ secrets.SFGARY_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'gcpweatherdemo'
           workflow-name: 'weather-cluster-demo'
@@ -34,7 +34,7 @@ jobs:
         uses: parallelworks/test-workflow-action@v5.1.0
         with:
           pw-user-host: 'beta.parallel.works'
-          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-api-key: ${{ secrets.SFGARY_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: 'awsweatherdemo'
           workflow-name: 'weather-cluster-demo'
@@ -44,7 +44,7 @@ jobs:
         uses: parallelworks/test-workflow-action@v5.1.0
         with:
           pw-user-host: 'beta.parallel.works'
-          pw-api-key: ${{ secrets.KRISTOPHERBOOKER_API_KEY }}
+          pw-api-key: ${{ secrets.SFGARY_API_KEY }}
           pw-user: 'Kristopher.Booker'
           resource-pool-names: '---'
           workflow-name: 'merge_github_branches'
