@@ -6,7 +6,8 @@ similar to
 except that this workflow runs a larger weather model across multiple
 nodes in a cluster instead of a small forecast on a single node.
 
-This demo is based on the [AWS Weather Workshop](https://weather.hpcworkshops.com/)
+This demo is based on the [AWS Weather Workshop](https://catalog.workshops.aws/nwp-on-aws/en-US) 
+[old link](https://weather.hpcworkshops.com/)
 instructions for a CONUS-scale WRF model
 ([Smith et al., 2020](https://weather.hpcworkshops.com/authors.html)).
 The setup instructions here are specific to Parallel Works (PW) V2 cloud
