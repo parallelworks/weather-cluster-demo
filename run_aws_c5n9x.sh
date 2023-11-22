@@ -31,7 +31,9 @@ source ~/.bashrc
 
 # AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
 # cd /shared/wrf/conus_12km/
-cd conus_12km
+
+# Can replace $HOME/wrf with /lustre if enabled...
+cd $HOME/wrf/conus_12km
 
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
@@ -42,7 +44,7 @@ cat > slurm-wrf-conus12km.sh <<EOF
 #SBATCH --ntasks-per-node=2
 #SBATCH --exclusive
 
-export I_MPI_OFI_LIBRARY_INTERNAL=0
+#export I_MPI_OFI_LIBRARY_INTERNAL=0
 spack load intel-oneapi-mpi
 spack load wrf
 #module load libfabric-aws
@@ -52,9 +54,7 @@ ulimit -s unlimited
 ulimit -a
 
 export OMP_NUM_THREADS=6
-export FI_PROVIDER=efa
-export I_MPI_FABRICS=ofi
-export I_MPI_OFI_PROVIDER=efa
+export I_MPI_FABRICS=efa
 export I_MPI_PIN_DOMAIN=omp
 export KMP_AFFINITY=compact
 export I_MPI_DEBUG=4
