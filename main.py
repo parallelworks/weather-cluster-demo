@@ -120,7 +120,7 @@ print("Defining Parsl workflow apps...")
 def wrf_run(run_script, run_dir='~/weather-cluster-demo', inputs=[], outputs=[], stdout='wrf.run.stdout', stderr='wrf.run.stderr'):
         return '''
         cd {start}
-        ./{runner}
+        sbatch ./{runner}
         '''.format(
             start=run_dir,
             runner=run_script
