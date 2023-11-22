@@ -122,7 +122,7 @@ def wrf_run(run_script, run_dir='~/weather-cluster-demo', inputs=[], outputs=[],
         cd {start}
         ./{runner}
         '''.format(
-            start=run_dir
+            start=run_dir,
             runner=run_script
         )
     
