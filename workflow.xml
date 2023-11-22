@@ -1,48 +1,11 @@
 <tool id='weather-cluster-demo' name='weather-cluster-demo'>
-	<command interpreter='bash'>workflow.sh</command>
-	<inputs>
-		<param name='pw_conda_yaml'
-			label='PW Conda YAML Definition File' type='hidden' 
-			value='./requirements/conda_env_local.yaml' width='50%_none'>
-		</param>
-		<param name='pw_conda_dir'
-			label='PW Conda Directory' type='hidden' 
-			value='/pw/miniconda3' width='50%_none'>
-		</param>
-		<param name='pw_conda_env' label='PW Conda Environment Name' 
-			type='hidden' value='wrf' width='50%_none'
-		</param>
-		<section name='pwrl_sim_host' 
-			type='section' title='Simulation cluster' expanded='true'>
-			
-			<param name='resource'
-				label='Workflow simulation host (cluster name)'
-				type='computeResource'
-				width='50%_none%'
-				help='Cluster to run simulation. Select a resource from drop down menu.'
-				hideUserWorkspace='true'>
-			</param>
-			<param name='nports'
-				label='Number of Ports to Reserve'
-				type='hidden' value='2' width='50%_none'>
-      			</param>
-      			<param name='worker_conda_yaml'
-				label='Worker Conda YAML Definition File' type='hidden'
-				value='./requirements/conda_env_remote.yaml' width='50%_none'>
-			</param>
-			<param name='worker_conda_dir'
-				label='Worker Conda Directory'
-				type='hidden' value='__workdir__/pw/miniconda' width='50%_none'>
-			</param>
-			<param name='worker_conda_env'
-				label='Worker Conda Environment Name'
-				type='hidden' value='mdlite' width='50%_none'>
-			</param>
-		</section>
-		<param name='repository' label='Repository' type='text' value='https://github.com/parallelworks/weather-cluster-demo'>
-		</param>
-	</inputs>
-	<outputs>
-	</outputs>
+  <command interpreter='bash'>workflow.sh</command>
+  <inputs>
+    <param name='pw_conda_yaml' 
+           label='PW Conda YAML Definition File' type='hidden' 
+           value='./requirements/conda_env_local.yaml' width='50%_none'>
+    </param>
+  </inputs>
+  <outputs>
+  </outputs>
 </tool>
-
