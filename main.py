@@ -117,7 +117,7 @@ print("Defining Parsl workflow apps...")
 
 #@parsl_utils.parsl_wrappers.log_app
 @bash_app(executors=[resource_labels[0]])
-def wrf_run(run_script, run_dir, inputs=[], outputs=[], stdout='wrf.run.stdout', stderr='wrf.run.stderr'):
+def wrf_run(run_script, run_dir='~/weather-cluster-demo', inputs=[], outputs=[], stdout='wrf.run.stdout', stderr='wrf.run.stderr'):
         return '''
         cd {start}
         ./{runner}
