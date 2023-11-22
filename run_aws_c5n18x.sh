@@ -31,7 +31,7 @@ source ~/.bashrc
 
 # AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
 # cd /shared/wrf/conus_12km/
-cd conus_12km
+cd $HOME/wrf/conus_12km
 
 export I_MPI_FABRIC=efa
 
