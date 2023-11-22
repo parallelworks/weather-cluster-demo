@@ -35,7 +35,7 @@
       </param>
       <param name='worker_conda_env' 
              label='Worker Conda Environment Name' 
-             type='hidden' value='mdlite' width='50%_none'>
+             type='hidden' value='wrf' width='50%_none'>
       </param>
     </section>
     <param name='repository' label='Repository' type='text' value='https://github.com/parallelworks/weather-cluster-demo'>
