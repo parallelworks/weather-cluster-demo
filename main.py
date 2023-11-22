@@ -141,7 +141,7 @@ print("Running simulation...")
 #============================================================================
 # SIMULATE
 #============================================================================
-wrf_run_fut = wrf_run(run_script)
+wrf_run_fut = wrf_run(run_script=form_inputs['run_script'])
         
 wrf_run_fut.result()
         
