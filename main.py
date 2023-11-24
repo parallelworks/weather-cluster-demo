@@ -120,6 +120,8 @@ print("Defining Parsl workflow apps...")
 def wrf_run(run_script, run_dir='~/weather-cluster-demo', inputs=[], outputs=[], stdout='wrf.run.stdout', stderr='wrf.run.stderr'):
         return '''
         cd {start}
+	source ~/pw/miniconda/etc/profile.d/conda.sh
+	conda env update -f {start}/examples/wrf_env_spec.yaml --name vis
         sbatch ./{runner}
         '''.format(
             start=run_dir,
