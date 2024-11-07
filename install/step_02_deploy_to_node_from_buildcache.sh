@@ -39,6 +39,8 @@ echo Configuring external packages...
 
 spack_packages=${SPACK_ROOT}/etc/spack/packages.yaml
 echo "packages:" > $spack_packages
+echo "    all:" >> $spack_packages
+echo "        target: ['x86_64']" >> $spack_packages
 echo "    gcc:" >> $spack_packages
 echo "        externals:" >> $spack_packages
 echo "        - spec: gcc@7.3.1" >> $spack_packages
@@ -87,7 +89,7 @@ spack install -j 30 --no-check-signature intel-oneapi-compilers@2022.1.0; \
 spack load intel-oneapi-compilers; \
 spack compiler find; \
 spack unload; \
-spack spack install -j 30 --no-check-signature intel-oneapi-mpi%intel; \
+spack install -j 30 --no-check-signature intel-oneapi-mpi%intel; \
 spack install -j 30 --no-check-signature wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
 
 #==============================

@@ -16,8 +16,25 @@ install_dir=${HOME}/wrf
 echo Install newer version of gcc...
 #==============================
 
-sudo yum install -y centos-release-scl
-sudo yum install -y devtoolset-7
+# Older approach is limited to gcc 7
+# on CentOS7
+#sudo yum install -y centos-release-scl
+#sudo yum install -y devtoolset-7
+
+gcc_version="11"
+gcc_version_full="11.2.1"
+
+# Use these for CentOS7
+#sudo yum install -y devtoolset-${gcc_version}-gcc
+#sudo yum install -y devtoolset-${gcc_version}-gcc-c++
+#sudo yum install -y devtoolset-${gcc_version}-gcc-gfortran
+#sudo yum install -y devtoolset-${gcc_version}-gdb 
+
+# Use these for Rocky8
+sudo yum install -y gcc-toolset-${gcc_version}-gcc
+sudo yum install -y gcc-toolset-${gcc_version}-gcc-c++
+sudo yum install -y gcc-toolset-${gcc_version}-gcc-gfortran
+sudo yum install -y gcc-toolset-${gcc_version}-gdb
 
 #==============================
 echo Setting up SPACK_ROOT...
@@ -31,7 +48,9 @@ sudo chmod --recursive a+rwx ${install_dir}
 echo Downloading spack...
 #==============================
 
-git clone -b v0.18.0 -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
+# Used 0.18.0 for a while.
+# Upgrade to 0.22.2 now.
+git clone -b v0.22.2 -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
 
 #==============================
 echo Set up Spack environment...
@@ -54,17 +73,29 @@ pip3 install botocore==1.23.46 boto3==1.20.46
 echo Configuring external packages...
 #==============================
 
+# Manually specify gcc version below.
+# Checked that subversion .2.1 is the
+# same across Rocky8 and CentOS7.
+
+# Slurm version changes depending on image:
+# CentOS7
+#slurm_version="20.02.7"
+# Rocky8
+slurm_version="23.11.9"
+
 spack_packages=${SPACK_ROOT}/etc/spack/packages.yaml
 echo "packages:" > $spack_packages
+echo "    all:" >> $spack_packages
+echo "        target: ['x86_64']" >> $spack_packages 
 echo "    gcc:" >> $spack_packages
 echo "        externals:" >> $spack_packages
-echo "        - spec: gcc@7.3.1" >> $spack_packages
-echo "          prefix: /opt/rh/devtoolset-7/root/usr" >> $spack_packages
+echo "        - spec: gcc@${gcc_version_full}" >> $spack_packages
+echo "          prefix: /opt/rh/devtoolset-${gcc_version}/root/usr" >> $spack_packages
 echo "        buildable: False" >> $spack_packages
 echo "    slurm:" >> $spack_packages
-echo "        variants: +pmix sysconfdir=/mnt/shared/etc/slurm" >> $spack_packages
+echo "        variants: +pmix sysconfdir=/etc/slurm" >> $spack_packages
 echo "        externals:" >> $spack_packages
-echo "        - spec: slurm@20.02.7 +pmix sysconfdir=/mnt/shared/etc/slurm" >> $spack_packages
+echo "        - spec: slurm@${slurm_version} +pmix sysconfdir=/etc/slurm" >> $spack_packages
 echo "          prefix: /usr" >> $spack_packages
 echo "        buildable: False" >> $spack_packages
 
@@ -75,15 +106,32 @@ echo Installing spack packages...
 # because 30 CPU is the typical minimum
 # amount of CPU for high-speed networking
 # instance types.
-echo 'source ~/.bashrc; \
-spack compiler find; \
-spack install -j 30 patchelf; \
-spack install -j 30 intel-oneapi-compilers; \
-spack load intel-oneapi-compilers; \
-spack compiler find; \
-spack unload; \
-spack install -j 30 intel-oneapi-mpi%intel; \
-spack install -j 30 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
+#==========================================
+# Older approach with using devtoolset on
+# CentOS7
+#echo 'source ~/.bashrc; \
+#spack compiler find; \
+#spack install -j 30 patchelf; \
+#spack install -j 30 intel-oneapi-compilers; \
+#spack load intel-oneapi-compilers; \
+#spack compiler find; \
+#spack unload; \
+#spack install -j 30 intel-oneapi-mpi%intel; \
+#spack install -j 30 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
+#==========================================
+# New approach:
+# CentOS7
+#source /opt/rh/devtoolset-${gcc_version}/enable
+# Rocky8
+source /opt/rh/gcc-toolset-${gcc_version}/enable
+spack compiler find
+spack install -j 30 patchelf%gcc@${gcc_version_full}
+spack install -j 30 intel-oneapi-compilers
+spack load intel-oneapi-compilers
+spack compiler find
+spack unload
+spack install -j 30 intel-oneapi-mpi%intel
+spack install -j 30 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi
 
 #==============================
 echo Cache a copy of model data...
