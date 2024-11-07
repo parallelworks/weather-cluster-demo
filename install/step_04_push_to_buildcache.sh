@@ -42,3 +42,14 @@ done
 #
 spack buildcache update-index --mirror-url $BUCKET_URI
 
+# Also need to push compilers and patchelf? I'm not 100% certain
+# these steps are necessary since they are present in my bucket
+# but not when I run "spack buildcache list".
+#oneapi_spack_hash=`spack find --format "yyy {version} /{hash}" intel-oneapi-compilers | cut -f3 -d" "`
+#spack buildcache create -af --only=package --unsigned --mirror-name ${SPACK_BUILDCACHE_NAME} ${oneapi_spack_hash}
+#spack buildcache update-index --mirror-url $BUCKET_URI
+
+#patchelf_spack_hash=`spack find --format "yyy {version} /{hash}" patchelf | cut -f3 -d" "`
+#spack buildcache create -af --only=package --unsigned --mirror-name ${SPACK_BUILDCACHE_NAME} ${patchelf_spack_hash}
+#spack buildcache update-index --mirror-url $BUCKET_URI
+
