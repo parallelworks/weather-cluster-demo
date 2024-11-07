@@ -94,6 +94,15 @@ echo Set permissions...
 sudo chmod --recursive a+rwx $install_dir
 
 #==============================
+echo Download WRF 12km CONUS config...
+#==============================
+
+pushd $install_dir
+curl -O https://www2.mmm.ucar.edu/wrf/OnLineTutorial/wrf_cloud/wrf_simulation_CONUS12km.tar.gz
+tar -xzf wrf_simulation_CONUS12km.tar.gz
+popd
+
+#==============================
 echo Make links in model data...
 #==============================
 # This is the only step in local_setup.sh
