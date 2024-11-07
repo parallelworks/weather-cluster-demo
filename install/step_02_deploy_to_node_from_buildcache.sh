@@ -82,11 +82,13 @@ echo Set up Spack...
 # instance types.
 echo 'source ~/.bashrc; \
 spack compiler find; \
-spack install -j 30 patchelf; \
-spack install -j 30 intel-oneapi-compilers@2022.1.0; \
+spack install -j 30 --no-check-signature patchelf; \
+spack install -j 30 --no-check-signature intel-oneapi-compilers@2022.1.0; \
 spack load intel-oneapi-compilers; \
 spack compiler find; \
-spack unload; ' | scl enable devtoolset-7 bash
+spack unload; \
+spack spack install -j 30 --no-check-signature intel-oneapi-mpi%intel; \
+spack install -j 30 --no-check-signature wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi; ' | scl enable devtoolset-7 bash
 
 #==============================
 echo Set permissions...
