@@ -67,7 +67,7 @@ source $HOME/.bashrc
 echo Install some dependencies to check download certificates...
 #==============================
 
-pip3 install botocore==1.23.46 boto3==1.20.46
+#pip3 install botocore==1.23.46 boto3==1.20.46
 
 #==============================
 echo Configuring external packages...
@@ -108,7 +108,8 @@ echo Installing spack packages...
 # instance types.
 #==========================================
 # Older approach with using devtoolset on
-# CentOS7
+# CentOS7. Note change from %intel to %oneapi
+# below.
 #echo 'source ~/.bashrc; \
 #spack compiler find; \
 #spack install -j 30 patchelf; \
@@ -123,6 +124,11 @@ echo Installing spack packages...
 # CentOS7
 #source /opt/rh/devtoolset-${gcc_version}/enable
 # Rocky8
+#
+# Spack packages https://packages.spack.io/package.html?name=wrf
+# notes that wrf@4.3 is not compatible with %oneapi. Update
+# to newest WRF listed in spack@0.22.2 `spack info wrf`,
+# which is wrf@4.5.1.
 source /opt/rh/gcc-toolset-${gcc_version}/enable
 spack compiler find
 spack install -j 30 patchelf%gcc@${gcc_version_full}
@@ -130,8 +136,8 @@ spack install -j 30 intel-oneapi-compilers
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 30 intel-oneapi-mpi%intel
-spack install -j 30 wrf@4.3.3%intel build_type=dm+sm ^intel-oneapi-mpi
+spack install -j 30 intel-oneapi-mpi%oneapi
+spack install -j 30 wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 #==============================
 echo Cache a copy of model data...
@@ -152,15 +158,15 @@ rm -f Miniconda3-py39_4.9.2-Linux-x86_64.sh
 
 # (Do not run conda init as part of install)
 source ${miniconda_loc}/etc/profile.d/conda.sh
-conda create --name parsl_py39
+conda create -y --name parsl_py39
 conda activate parsl_py39
 
 # Install Pyferret first because its installer
 # searches only for a Python version x.x and
 # breaks when Pyton is 3.10 or more because it
 # thinks the system is at Python 3.1.
-conda install -y -c conda-forge pyferret
-conda install -y -c conda-forge parsl
+#conda install -y -c conda-forge pyferret
+#conda install -y -c conda-forge parsl
 conda install -y requests
 conda install -y ipykernel
 conda install -y -c anaconda jinja2
