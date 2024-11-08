@@ -15,6 +15,11 @@ WRF spack archives that work on AWS, GCE, and Azure.  **This has
 yet to be tested fully.** This script will install some critical
 system level tools, Spack, and then compile WRF and all 
 dependencies from scratch taking about 80 minutes end-to-end.
+With WRF 4.5.x and OneAPI compilers, the build requirements
+have a very short peak RAM usage of a little bit more than 48GB
+but most of the build runs with less than 16GB of RAM and only
+1-2 CPU. Experimentation with the `-j 30` option may reduce this
+peak RAM usage.
 
 The [AWS NWP tutorial](https://weather.hpcworkshops.com/03-wrf/01-spack-install-wrf.html) 
 provides pre-compiled binaries only for AWS-Linux from their 

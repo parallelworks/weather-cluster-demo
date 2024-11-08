@@ -68,6 +68,8 @@ echo Install some dependencies to check download certificates...
 #==============================
 
 #pip3 install botocore==1.23.46 boto3==1.20.46
+pip3 install boto3
+pip3 install botocore
 
 #==============================
 echo Configuring external packages...
@@ -131,13 +133,13 @@ echo Installing spack packages...
 # which is wrf@4.5.1.
 source /opt/rh/gcc-toolset-${gcc_version}/enable
 spack compiler find
-spack install -j 30 --no-check-signature patchelf%gcc@${gcc_version_full}
-spack install -j 30 --no-check-signature intel-oneapi-compilers
+spack install -j 30 patchelf%gcc@${gcc_version_full}
+spack install -j 30 intel-oneapi-compilers
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 30 --no-check-signature intel-oneapi-mpi%oneapi
-spack install -j 30 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+spack install -j 30 intel-oneapi-mpi%oneapi
+spack install -j 30 wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 #==============================
 echo Cache a copy of model data...
