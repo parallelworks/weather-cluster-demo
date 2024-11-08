@@ -23,6 +23,8 @@ echo Install newer version of gcc...
 
 gcc_version="11"
 gcc_version_full="11.2.1"
+oneapi_version="2024.1.0"
+oneapi_mpi_version="2021.12.1"
 
 # Use these for CentOS7
 #sudo yum install -y devtoolset-${gcc_version}-gcc
@@ -71,6 +73,8 @@ echo Install some dependencies to check download certificates...
 #==============================
 
 #pip3 install botocore==1.23.46 boto3==1.20.46
+pip3 install botocore
+pip3 install boto3
 
 #==============================
 echo Configuring external packages...
@@ -128,6 +132,7 @@ echo Set up Spack...
 # CentOS7
 #source /opt/rh/devtoolset-${gcc_version}/enable
 # Rocky8
+source /opt/rh/gcc-toolset-${gcc_version}/enable
 #
 # Spack packages https://packages.spack.io/package.html?name=wrf
 # notes that wrf@4.3 is not compatible with %oneapi. Update
@@ -137,15 +142,24 @@ echo Set up Spack...
 # WORKING HERE - if in a buildcache, may not need
 # to install the compiler - just pull the runtime.
 # This will speed things up considerably.
-source /opt/rh/gcc-toolset-${gcc_version}/enable
+# HOWEVER, when you run `spack install wrf%oneapi`, Spack
+# treats OneAPI as a dependency and cannot proceed without
+# the compiler installed. There's probably a way around
+# this using the runtime, but I haven't tried yet (perhaps
+# even specifying `wrf ^intel-oneapi-runtime`. It looks like
+# compiler runtimes are a new feature (added in spack 0.22)
+# and may only work with select compilers (gcc) but not yet
+# with OneAPI:
+# https://spack-tutorial.readthedocs.io/en/latest/tutorial_binary_cache.html#reuse-of-binaries-from-a-build-cache
+source ./step_03_add_buildcache.sh
 spack compiler find
-spack install -j 30 patchelf%gcc@${gcc_version_full}
-spack install -j 30 intel-oneapi-compilers
+spack install -j 2 --no-check-signature patchelf%gcc@${gcc_version_full}
+spack install -j 2 --no-check-signature intel-oneapi-compilers@${oneapi_version}
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 30 intel-oneapi-mpi%oneapi
-spack install -j 30 wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+spack install -j 2 --no-check-signature intel-oneapi-mpi@{oneapi_mpi_version}%oneapi
+spack install -j 2 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 #==============================
 echo Download WRF 12km CONUS config...
