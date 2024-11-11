@@ -152,14 +152,25 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 # with OneAPI:
 # https://spack-tutorial.readthedocs.io/en/latest/tutorial_binary_cache.html#reuse-of-binaries-from-a-build-cache
 source ./step_03_add_buildcache.sh
+# For example, I tried to only run `spack install wrf` after
+# the setup lines above, and while the environment concretized,
+# it still attempted to build from scratch. So there is something
+# about how the Spack hash that is defined when the packages
+# are compiled that needs to be sorted out/generalized so
+# that we can use the app with the OneAPI-runtime and without
+# the compiler install.
 spack compiler find
 spack install -j 2 --no-check-signature patchelf%gcc@${gcc_version_full}
 spack install -j 2 --no-check-signature intel-oneapi-compilers@${oneapi_version}
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 2 --no-check-signature intel-oneapi-mpi@{oneapi_mpi_version}%oneapi
+spack install -j 2 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
 spack install -j 2 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+
+# This does not work by itself without attempting
+# to rebuild everything from scratch.
+#spack install -j 2 --no-check-signature wrf@4.5.1
 
 #==============================
 echo Download WRF 12km CONUS config...
@@ -175,9 +186,12 @@ echo Make links in model data...
 #==============================
 # This is the only step in local_setup.sh
 # not already done in the Spack stack
-# or here.
+# or here. Note that "wrf%intel" needs
+# to be relaxed to simply "wrf" because
+# of the potential for using oneapi,
+# intel, or another compiler.
 cd $install_dir
 cd conus_12km
-spack location -i wrf%intel | xargs -I@ sh -c "ln -s @/test/em_real/* ."
+spack location -i wrf | xargs -I@ sh -c "ln -s @/test/em_real/* ."
 
 echo Completed deploying to cluster
