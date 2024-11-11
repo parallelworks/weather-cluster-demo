@@ -30,12 +30,18 @@ source ~/.bashrc
 
 # AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
 # cd /shared/wrf/conus_12km/
-cd conus_12km
+cd ${HOME}/wrf/conus_12km
 
 # This env var needs to match the version
 # of IntelMPI.  For the general_install,
 # IntelMPI is 2022, see https://cloud.google.com/architecture/best-practices-for-using-mpi-on-compute-engine#use_intel_mpi
-export I_MPI_FABRICS="ofi_rxm;tcp"
+#export I_MPI_FABRICS="ofi_rxm;tcp"
+# Newer version of OneAPI? 2021.12.2 - but still get error messages
+# experiment with shm:ofi and setting I_MPI_OFI_PROVIDER to TCP?
+# See:
+# https://www.intel.com/content/www/us/en/docs/mpi-library/developer-reference-linux/2021-8/communication-fabrics-control.html
+# https://www.intel.com/content/www/us/en/docs/mpi-library/developer-reference-linux/2021-8/ofi-capable-network-fabrics-control.html
+export I_MPI_FABRICS="shm:tcp"
 
 cat > slurm-wrf-conus12km.sh <<EOF
 #!/bin/bash
@@ -54,7 +60,7 @@ ulimit -s unlimited
 ulimit -a
 
 export OMP_NUM_THREADS=6
-export I_MPI_FABRICS="ofi_rxm;tcp"
+export I_MPI_FABRICS="shm:tcp"
 export I_MPI_PIN_DOMAIN=omp
 export KMP_AFFINITY=compact
 export I_MPI_DEBUG=6
