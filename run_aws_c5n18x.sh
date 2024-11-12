@@ -31,7 +31,7 @@ source ~/.bashrc
 
 # AV: Modifying this to run from wherever the repo is being launched. Use workflow to specify this location.
 # cd /shared/wrf/conus_12km/
-cd $HOME/wrf/conus_12km
+cd ${HOME}/wrf/conus_12km
 
 export I_MPI_FABRIC=efa
 
@@ -55,7 +55,7 @@ export OMP_NUM_THREADS=6
 export I_MPI_FABRICS=efa
 export I_MPI_PIN_DOMAIN=omp
 export KMP_AFFINITY=compact
-export I_MPI_DEBUG=4
+export I_MPI_DEBUG=6
 
 time mpiexec.hydra -np \$SLURM_NTASKS --ppn \$SLURM_NTASKS_PER_NODE \$wrf_exe
 echo $? > wrf.exit.code
