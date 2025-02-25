@@ -178,6 +178,5 @@ echo Set permissions...
 #==============================
 sudo chmod --recursive a+rwx $install_dir
 
-echo Completed building image
-# It is essential to have a newline at the end of this file!
+echo Completed setting up WRF
 
