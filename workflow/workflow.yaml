@@ -14,27 +14,27 @@ jobs:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
           echo Cloning workflow code to resource...
-          ${sshcmd} "mkdir -p ${{inputs.wrf.workdir_root}}; \
+          ${sshcmd} "mkdir -p ${{ inputs.wrf.workdir_root }}; \
                      cd ${{inputs.wrf.workdir_root}}; \
                      git clone https://github.com/parallelworks/weather-cluster-demo; \
                      cd weather-cluster-demo; \
-                     git checkout ${{inputs.wrf.wflow_code_branch}}"
+                     git checkout ${{ inputs.wrf.wflow_code_branch }}"
       - name: Install WRF
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
           echo Installing WRF via Spack...
-          ${sshcmd} "cd ${{inputs.wrf.workdir_root}}/weather-cluster-demo; \
-                     ./install/deploy_to_node_from_buildcache.sh ${{inputs.spack.buildcache_uri}}"
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                     ./install/deploy_to_node_from_buildcache.sh ${{ inputs.spack.buildcache_uri }}"
       - name: Push to buildcache
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         if: ${{ 'TRUE' === inputs.spack.push_to_buildcache }}
         run: |
           echo Pushing artefacts to buildcache...
-          ${sshcmd} "cd ${{inputs.wrf.workdir_root}}/weather-cluster-demo; \
-                    ./install/push_to_buildcache.sh"
-  run_workflow:
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                    ./install/push_to_buildcache.sh ${{ inputs.spack.buildcache_uri }}"
+  run_wrf:
     needs:
       - preprocessing
     steps:
@@ -52,7 +52,7 @@ jobs:
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
-          ${sshcmd} "hostname && . ${{ inputs.tiegcm.conda_base_path }}/etc/profile.d/conda.sh && conda activate ${{ inputs.tiegcm.conda_base_path }}/envs/parsl && cd ${{inputs.tiegcm.workdir_root}}/tiegcm-digital-twin && (papermill -k python3 TIEGCM_workflow.ipynb OUTPUT.ipynb -p param_runid ${{inputs.tiegcm.param_runid}} -p param_workdir_root ${{inputs.tiegcm.param_work_dir_root}} 2>&1 | tee _papermill.log)"
+          ${sshcmd} "hostname"
     
 'on':
   execute:
@@ -77,7 +77,7 @@ jobs:
             default: /spack-cache
             tooltip: Select a local path on filesystem (can be mounted remote storage) or PW CLI bucket URI (e.g. pw://<user>/<bucket_name>).
           push_to_buildcache:
-            label: Push build artefacts?
+            label: Push build artifacts?
             type: boolean
             default: false
             tooltip: Set to true if you want to save the compiled WRF binaries into the buildcache.
@@ -93,7 +93,7 @@ jobs:
           wflow_code_branch:
             label: Workflow code branch
             type: string
-            default: canary
+            default: add-v3-workflow
             tooltip: Specify the branch of tiegcm-digital-twin that you want to use for the workflow.
           rundir:
             label: Run directory

@@ -1,9 +1,10 @@
 #!/bin/bash
 #==============================
 # System setup script to use an
-# existing Spack stack. These 
-# commands are basically the same
-# as the start of build_node_image.sh.
+# existing Spack stack from a
+# buildcache. If the buildcache
+# is empty, build starts from 
+# scratch.
 #
 # Please see README.md for how how/why
 # to use install_dir, below.
@@ -133,7 +134,10 @@ echo Set up Spack...
 #source /opt/rh/devtoolset-${gcc_version}/enable
 # Rocky8
 source /opt/rh/gcc-toolset-${gcc_version}/enable
-#
+
+#=============================
+echo Adding buildcache...
+#============================
 # Spack packages https://packages.spack.io/package.html?name=wrf
 # notes that wrf@4.3 is not compatible with %oneapi. Update
 # to newest WRF listed in spack@0.22.2 `spack info wrf`,
@@ -151,7 +155,35 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 # and may only work with select compilers (gcc) but not yet
 # with OneAPI:
 # https://spack-tutorial.readthedocs.io/en/latest/tutorial_binary_cache.html#reuse-of-binaries-from-a-build-cache
-source ./step_03_add_buildcache.sh
+#
+# The _name is used by Spack.
+# The _uri corresponds to the bucket
+# identifier available on the PW CLI
+# or a path on the local filesystem
+# (which could be a mounted bucket/disk/etc.).
+export SPACK_BUILDCACHE_NAME="wrf-cache"
+export SPACK_BUILDCACHE_ID=$1
+
+# Register the buildcache with Spack by
+# first starting Spack and then adding the
+# cache.
+source ${SPACK_ROOT}/share/spack/setup-env.sh
+
+# If we are using the PW CLI to get the bucket credentials
+# and the $BUCKET_URI, run the following commands.
+# Otherwise, we assume a local directory on the filesystem.
+if [[ $SPACK_BUILDCACHE_URI == "pw://"* ]]; then
+    echo Getting bucket credentials from PW CLI for buildcache...
+    eval `pw buckets get-token ${SPACK_BUILDCACHE_URI}`
+    spack mirror add ${SPACK_BUILDCACHE_NAME} ${BUCKET_URI}
+else
+    echo Assuming buildcache is mounted on local filesystem...
+    spack mirror add ${SPACK_BUILDCACHE_NAME} ${SPACK_BUILDCACHE_ID}
+fi
+
+#============================
+echo Start Spack build.
+#===========================
 # For example, I tried to only run `spack install wrf` after
 # the setup lines above, and while the environment concretized,
 # it still attempted to build from scratch. So there is something
@@ -159,14 +191,18 @@ source ./step_03_add_buildcache.sh
 # are compiled that needs to be sorted out/generalized so
 # that we can use the app with the OneAPI-runtime and without
 # the compiler install.
+#
+# The build has a short term 48GB RAM peak. Most instances with
+# that much memory are in the 8-16 CPU range, so allow for many
+# simultaneous jobs.
 spack compiler find
-spack install -j 2 --no-check-signature patchelf%gcc@${gcc_version_full}
-spack install -j 2 --no-check-signature intel-oneapi-compilers@${oneapi_version}
+spack install -j 16 --no-check-signature patchelf%gcc@${gcc_version_full}
+spack install -j 16 --no-check-signature intel-oneapi-compilers@${oneapi_version}
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 2 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
-spack install -j 2 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+spack install -j 16 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
+spack install -j 16 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 # This does not work by itself without attempting
 # to rebuild everything from scratch.
