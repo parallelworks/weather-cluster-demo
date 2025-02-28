@@ -12,6 +12,8 @@
 # The _uri corresponds to the bucket
 # identifier available on the PW CLI
 # or a local path on the filesystem.
+install_dir=${HOME}/wrf
+export SPACK_ROOT=${install_dir}/spack
 export SPACK_BUILDCACHE_NAME="wrf-cache"
 export SPACK_BUILDCACHE_URI=$1
 
@@ -32,6 +34,8 @@ fi
 
 # "Start" Spack
 source ${SPACK_ROOT}/share/spack/setup-env.sh
+
+echo Assuming that buildcache is already added...
 
 # For each installed package, push to cache
 for ii in $(spack find --format "yyy {version} /{hash}" |
