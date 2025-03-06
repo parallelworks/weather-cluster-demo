@@ -173,7 +173,10 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 #==============================
 # Need to specify a long path padding to
 # allow for different install locations.
-spack config add config:install_tree:padded_length:256
+# WORKING HERE:
+# If this is 512, Intel OneAPI fails to install
+# lz4 is failing to install with any value of this setting.
+#spack config add config:install_tree:padded_length:256
 
 #=============================
 echo Adding buildcache...
