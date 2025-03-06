@@ -43,16 +43,15 @@ jobs:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
           ${sshcmd} "hostname"
-      - name: Deploy run directory
-        env:
-          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
-        run: |
-          ${sshcmd} "hostname"
       - name: Launch WRF
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
-          ${sshcmd} "hostname"
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                    ./run_general.sh ${{ inputs.wrf.workdir_root}}/${{ inputs.wrf.rundir }} \
+                                     ${{ inputs.pwrl_host.num_worker_nodes }} \
+                                     ${{ inputs.pwrl_host.num_mpi_ranks_per_node }} \
+                                     ${{ inputs.pwrl_host.partition }} "
     
 'on':
   execute:
