@@ -67,11 +67,10 @@ jobs:
             include-workspace: false
             tooltip: Resource to host the workflow
           partition:
-            type: slurm-partitions
+            type: string
             label: SLURM partition
             optional: false
             tooltip: Partition to submit the interactive job. No selection uses the default partition.
-            resource: ${{ inputs.pwrl_host.resource }}
           mpi_ranks_per_node:
             label: Number of MPI ranks per node
             type: integer
