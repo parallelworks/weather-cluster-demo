@@ -32,9 +32,14 @@ export SPACK_ROOT=${INSTALL_DIR}/spack
 # or a path on the local filesystem
 # (which could be a mounted bucket/disk/etc.).
 export SPACK_BUILDCACHE_NAME="wrf-cache"
-export SPACK_BUILDCACHE_ID=${2}
+export SPACK_BUILDCACHE_URI=${2}
 
 export RUN_DIR=${INSTALL_DIR}/${3}
+
+echo INSTALL_DIR is $INSTALL_DIR
+echo RUN_DIR is $RUN_DIR
+echo SPACK_ROOT is $SPACK_ROOT
+echo SPACK_BUILDCACHE_URI is $SPACK_BUILDCACHE_URI
 
 #==============================
 echo Install newer version of gcc...
@@ -205,7 +210,7 @@ if [[ $SPACK_BUILDCACHE_URI == "pw://"* ]]; then
     spack mirror add ${SPACK_BUILDCACHE_NAME} ${BUCKET_URI}
 else
     echo Assuming buildcache is mounted on local filesystem...
-    spack mirror add ${SPACK_BUILDCACHE_NAME} ${SPACK_BUILDCACHE_ID}
+    spack mirror add ${SPACK_BUILDCACHE_NAME} ${SPACK_BUILDCACHE_URI}
 fi
 
 #============================
