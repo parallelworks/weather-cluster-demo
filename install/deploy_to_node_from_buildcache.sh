@@ -158,6 +158,11 @@ echo Set up Spack...
 # Rocky8
 source /opt/rh/gcc-toolset-${gcc_version}/enable
 
+#==============================
+# Need to specify a long path padding to
+# allow for different install locations.
+spack config add config:install_tree:padded_length:512
+
 #=============================
 echo Adding buildcache...
 #============================
