@@ -80,11 +80,16 @@ git clone -b v0.22.2 -c feature.manyFiles=true https://github.com/spack/spack $S
 echo Set up Spack environment...
 #==============================
 
-# An alternative for local testing is $HOME/.bashrc
-# Here, this is added to /etc/bashrc so it is persistent
-# in the image and $HOME/.bashrc sources /etc/bashrc.
-sudo -s eval echo export SPACK_ROOT=${SPACK_ROOT}" >> "/etc/bashrc
-sudo -s eval echo source ${SPACK_ROOT}/share/spack/setup-env.sh" >> "/etc/bashrc
+echo export SPACK_ROOT=${SPACK_ROOT} >> ${HOME}/.bashrc
+echo source ${SPACK_ROOT}/share/spack/setup-env.sh >> ${HOME}/.bashrc
+
+# An alternative for local testing is /etc/bashrc
+# If you add to /etc/bashrc, it is persistent
+# in the image (if there is a snapshot taken) and 
+# $HOME/.bashrc sources /etc/bashrc.
+#sudo -s eval echo export SPACK_ROOT=${SPACK_ROOT}" >> "/etc/bashrc
+#sudo -s eval echo source ${SPACK_ROOT}/share/spack/setup-env.sh" >> "/etc/bashrc
+
 source $HOME/.bashrc
 
 #==============================
