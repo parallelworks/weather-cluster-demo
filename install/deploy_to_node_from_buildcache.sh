@@ -66,8 +66,15 @@ sudo yum install -y gcc-toolset-${gcc_version}-gdb
 echo Setting up SPACK_ROOT...
 #==============================
 
-sudo mkdir -p $SPACK_ROOT
-sudo chmod --recursive a+rwx ${INSTALL_DIR}
+# Sudo operations included here in case you
+# want to install into the image persistent
+# directories (i.e. /var, /opt). But this is
+# dropped in favor of a buildcache, so all
+# operatoins happen in user space from here on.
+#sudo mkdir -p $SPACK_ROOT
+#sudo chmod --recursive a+rwx ${INSTALL_DIR}
+
+mkdir -p $SPACK_ROOT
 mkdir -p $RUN_DIR
 
 #==============================
