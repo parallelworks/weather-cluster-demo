@@ -67,18 +67,19 @@ jobs:
             include-workspace: false
             tooltip: Resource to host the workflow
           partition:
-            type: string
+            type: slurm-partitions
             label: SLURM partition
-            optional: false
+            resource: ${{ inputs.pwrl_host.resource }}
+            account: ${PW_USER}
             tooltip: Partition to submit the interactive job. No selection uses the default partition.
           mpi_ranks_per_node:
             label: Number of MPI ranks per node
-            type: integer
+            type: number
             default: 4
             tooltip: There are 6 OpenMP threads (CPU) per MPI rank.
           num_worker_nodes:
             label: Number of worker nodes
-            type: integer
+            type: number
             default: 8
             tooltip: A total of 32 MPI ranks is required, e.g. 4 ranks/node x 8 nodes = 32.
       spack:
