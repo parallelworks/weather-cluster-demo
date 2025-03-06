@@ -7,11 +7,34 @@
 # scratch.
 #
 # Please see README.md for how how/why
-# to use install_dir, below.
+# to use INSTALL_DIR, below.
+# A typical invocation can be:
+# ./deploy_to_node_from_buildcache /home/${USER}/wrf /spack-cache run01
+# The first entry is the root working
+# directory, or INSTALL_DIR in this script.
+# The second entry is the URI of the Spack
+# buildcache (e.g. a local path on filesystem
+# or bucket handle pw://... or s3://...)
+# The final entry is the run directory for WRF itself.
+# This directory will be inside the root working
+# directory.
 #==============================
 
-install_dir=${HOME}/wrf
-#install_dir=/var/lib/pworks
+#==============================
+# CLI parameters from workflow:
+
+export INSTALL_DIR=${1}
+export SPACK_ROOT=${INSTALL_DIR}/spack
+
+# The _name is used by Spack.
+# The _uri corresponds to the bucket
+# identifier available on the PW CLI
+# or a path on the local filesystem
+# (which could be a mounted bucket/disk/etc.).
+export SPACK_BUILDCACHE_NAME="wrf-cache"
+export SPACK_BUILDCACHE_ID=${2}
+
+export RUN_DIR=${INSTALL_DIR}/${3}
 
 #==============================
 echo Install newer version of gcc...
@@ -43,14 +66,9 @@ sudo yum install -y gcc-toolset-${gcc_version}-gdb
 echo Setting up SPACK_ROOT...
 #==============================
 
-export SPACK_ROOT=${install_dir}/spack
 sudo mkdir -p $SPACK_ROOT
-sudo chmod --recursive a+rwx ${install_dir}
-
-#==============================
-echo Set permissions...
-#==============================
-sudo chmod --recursive a+rwx $install_dir
+sudo chmod --recursive a+rwx ${INSTALL_DIR}
+mkdir -p $RUN_DIR
 
 #==============================
 echo Downloading spack...
@@ -155,14 +173,6 @@ echo Adding buildcache...
 # and may only work with select compilers (gcc) but not yet
 # with OneAPI:
 # https://spack-tutorial.readthedocs.io/en/latest/tutorial_binary_cache.html#reuse-of-binaries-from-a-build-cache
-#
-# The _name is used by Spack.
-# The _uri corresponds to the bucket
-# identifier available on the PW CLI
-# or a path on the local filesystem
-# (which could be a mounted bucket/disk/etc.).
-export SPACK_BUILDCACHE_NAME="wrf-cache"
-export SPACK_BUILDCACHE_ID=$1
 
 # Register the buildcache with Spack by
 # first starting Spack and then adding the
@@ -211,23 +221,21 @@ spack install -j 16 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnet
 #==============================
 echo Download WRF 12km CONUS config...
 #==============================
-
-pushd $install_dir
+pushd $RUN_DIR
 curl -O https://www2.mmm.ucar.edu/wrf/OnLineTutorial/wrf_cloud/wrf_simulation_CONUS12km.tar.gz
 tar -xzf wrf_simulation_CONUS12km.tar.gz
-popd
 
 #==============================
 echo Make links in model data...
 #==============================
-# This is the only step in local_setup.sh
-# not already done in the Spack stack
-# or here. Note that "wrf%intel" needs
+# Note that "wrf%intel" needs
 # to be relaxed to simply "wrf" because
 # of the potential for using oneapi,
 # intel, or another compiler.
-cd $install_dir
-cd conus_12km
+pushd conus_12km
 spack location -i wrf | xargs -I@ sh -c "ln -s @/test/em_real/* ."
+popd
+popd
 
 echo Completed deploying to cluster
+

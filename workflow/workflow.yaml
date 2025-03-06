@@ -25,7 +25,7 @@ jobs:
         run: |
           echo Installing WRF via Spack...
           ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
-                     ./install/deploy_to_node_from_buildcache.sh ${{ inputs.spack.buildcache_uri }}"
+                     ./install/deploy_to_node_from_buildcache.sh ${{ inputs.wrf.workdir_root}} ${{ inputs.spack.buildcache_uri }} ${{ inputs.wrf.rundir}}"
       - name: Push to buildcache
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
