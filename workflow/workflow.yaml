@@ -66,14 +66,11 @@ jobs:
             label: Workflow host
             include-workspace: false
             tooltip: Resource to host the workflow
-        collapsed: false
         slurm_partition:
             type: slurm-partitions
             label: SLURM partition
             optional: false
-            tooltip: >-
-               Partition to submit the interactive job. Leave empty to let SLURM
-               pick the optimal option.
+            tooltip: Partition to submit the interactive job. No selection uses the default partition.
             resource: ${{ inputs.pwrl_host.resource }}
         mpi_ranks_per_node:
             label: Number of MPI ranks per node
@@ -106,7 +103,7 @@ jobs:
           workdir_root:
             label: Main working directory for everything
             type: string
-            default: /home/${USER}/pw/jobs/
+            default: /home/${USER}/wrf
             tooltip: Root directory for where workflow lives and runs
           wflow_code_branch:
             label: Workflow code branch
