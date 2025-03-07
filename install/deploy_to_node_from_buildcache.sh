@@ -1,16 +1,45 @@
 #!/bin/bash
 #==============================
 # System setup script to use an
-# existing Spack stack. These 
-# commands are basically the same
-# as the start of build_node_image.sh.
+# existing Spack stack from a
+# buildcache. If the buildcache
+# is empty, build starts from 
+# scratch.
 #
 # Please see README.md for how how/why
-# to use install_dir, below.
+# to use INSTALL_DIR, below.
+# A typical invocation can be:
+# ./deploy_to_node_from_buildcache /home/${USER}/wrf /spack-cache run01
+# The first entry is the root working
+# directory, or INSTALL_DIR in this script.
+# The second entry is the URI of the Spack
+# buildcache (e.g. a local path on filesystem
+# or bucket handle pw://... or s3://...)
+# The final entry is the run directory for WRF itself.
+# This directory will be inside the root working
+# directory.
 #==============================
 
-install_dir=${HOME}/wrf
-#install_dir=/var/lib/pworks
+#==============================
+# CLI parameters from workflow:
+
+export INSTALL_DIR=${1}
+export SPACK_ROOT=${INSTALL_DIR}/spack
+
+# The _name is used by Spack.
+# The _uri corresponds to the bucket
+# identifier available on the PW CLI
+# or a path on the local filesystem
+# (which could be a mounted bucket/disk/etc.).
+export SPACK_BUILDCACHE_NAME="wrf-cache"
+export SPACK_BUILDCACHE_URI=${2}
+
+export RUN_DIR=${INSTALL_DIR}/${3}
+
+echo INSTALL_DIR is $INSTALL_DIR
+echo RUN_DIR is $RUN_DIR
+echo SPACK_ROOT is $SPACK_ROOT
+echo SPACK_BUILDCACHE_URI is $SPACK_BUILDCACHE_URI
 
 #==============================
 echo Install newer version of gcc...
@@ -42,14 +71,16 @@ sudo yum install -y gcc-toolset-${gcc_version}-gdb
 echo Setting up SPACK_ROOT...
 #==============================
 
-export SPACK_ROOT=${install_dir}/spack
-sudo mkdir -p $SPACK_ROOT
-sudo chmod --recursive a+rwx ${install_dir}
+# Sudo operations included here in case you
+# want to install into the image persistent
+# directories (i.e. /var, /opt). But this is
+# dropped in favor of a buildcache, so all
+# operatoins happen in user space from here on.
+#sudo mkdir -p $SPACK_ROOT
+#sudo chmod --recursive a+rwx ${INSTALL_DIR}
 
-#==============================
-echo Set permissions...
-#==============================
-sudo chmod --recursive a+rwx $install_dir
+mkdir -p $SPACK_ROOT
+mkdir -p $RUN_DIR
 
 #==============================
 echo Downloading spack...
@@ -61,11 +92,16 @@ git clone -b v0.22.2 -c feature.manyFiles=true https://github.com/spack/spack $S
 echo Set up Spack environment...
 #==============================
 
-# An alternative for local testing is $HOME/.bashrc
-# Here, this is added to /etc/bashrc so it is persistent
-# in the image and $HOME/.bashrc sources /etc/bashrc.
-sudo -s eval echo export SPACK_ROOT=${SPACK_ROOT}" >> "/etc/bashrc
-sudo -s eval echo source ${SPACK_ROOT}/share/spack/setup-env.sh" >> "/etc/bashrc
+echo export SPACK_ROOT=${SPACK_ROOT} >> ${HOME}/.bashrc
+echo source ${SPACK_ROOT}/share/spack/setup-env.sh >> ${HOME}/.bashrc
+
+# An alternative for local testing is /etc/bashrc
+# If you add to /etc/bashrc, it is persistent
+# in the image (if there is a snapshot taken) and 
+# $HOME/.bashrc sources /etc/bashrc.
+#sudo -s eval echo export SPACK_ROOT=${SPACK_ROOT}" >> "/etc/bashrc
+#sudo -s eval echo source ${SPACK_ROOT}/share/spack/setup-env.sh" >> "/etc/bashrc
+
 source $HOME/.bashrc
 
 #==============================
@@ -133,7 +169,20 @@ echo Set up Spack...
 #source /opt/rh/devtoolset-${gcc_version}/enable
 # Rocky8
 source /opt/rh/gcc-toolset-${gcc_version}/enable
-#
+
+#==============================
+# Need to specify a long path padding to
+# allow for different install locations.
+# WORKING HERE:
+# If this is 512, Intel OneAPI fails to install
+# lz4 is failing to install with any reasonable 
+# value of this setting (Spack paths tend to be
+# about 100 characters including the hash).
+#spack config add config:install_tree:padded_length:128
+
+#=============================
+echo Adding buildcache...
+#============================
 # Spack packages https://packages.spack.io/package.html?name=wrf
 # notes that wrf@4.3 is not compatible with %oneapi. Update
 # to newest WRF listed in spack@0.22.2 `spack info wrf`,
@@ -151,7 +200,27 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 # and may only work with select compilers (gcc) but not yet
 # with OneAPI:
 # https://spack-tutorial.readthedocs.io/en/latest/tutorial_binary_cache.html#reuse-of-binaries-from-a-build-cache
-source ./step_03_add_buildcache.sh
+
+# Register the buildcache with Spack by
+# first starting Spack and then adding the
+# cache.
+source ${SPACK_ROOT}/share/spack/setup-env.sh
+
+# If we are using the PW CLI to get the bucket credentials
+# and the $BUCKET_URI, run the following commands.
+# Otherwise, we assume a local directory on the filesystem.
+if [[ $SPACK_BUILDCACHE_URI == "pw://"* ]]; then
+    echo Getting bucket credentials from PW CLI for buildcache...
+    eval `pw buckets get-token ${SPACK_BUILDCACHE_URI}`
+    spack mirror add ${SPACK_BUILDCACHE_NAME} ${BUCKET_URI}
+else
+    echo Assuming buildcache is mounted on local filesystem...
+    spack mirror add ${SPACK_BUILDCACHE_NAME} ${SPACK_BUILDCACHE_URI}
+fi
+
+#============================
+echo Start Spack build.
+#===========================
 # For example, I tried to only run `spack install wrf` after
 # the setup lines above, and while the environment concretized,
 # it still attempted to build from scratch. So there is something
@@ -159,14 +228,18 @@ source ./step_03_add_buildcache.sh
 # are compiled that needs to be sorted out/generalized so
 # that we can use the app with the OneAPI-runtime and without
 # the compiler install.
+#
+# The build has a short term 48GB RAM peak. Most instances with
+# that much memory are in the 8-16 CPU range, so allow for many
+# simultaneous jobs.
 spack compiler find
-spack install -j 2 --no-check-signature patchelf%gcc@${gcc_version_full}
-spack install -j 2 --no-check-signature intel-oneapi-compilers@${oneapi_version}
+spack install -j 16 --no-check-signature patchelf%gcc@${gcc_version_full}
+spack install -j 16 --no-check-signature intel-oneapi-compilers@${oneapi_version}
 spack load intel-oneapi-compilers
 spack compiler find
 spack unload
-spack install -j 2 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
-spack install -j 2 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+spack install -j 16 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
+spack install -j 16 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 # This does not work by itself without attempting
 # to rebuild everything from scratch.
@@ -175,23 +248,21 @@ spack install -j 2 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetc
 #==============================
 echo Download WRF 12km CONUS config...
 #==============================
-
-pushd $install_dir
+pushd $RUN_DIR
 curl -O https://www2.mmm.ucar.edu/wrf/OnLineTutorial/wrf_cloud/wrf_simulation_CONUS12km.tar.gz
 tar -xzf wrf_simulation_CONUS12km.tar.gz
-popd
 
 #==============================
 echo Make links in model data...
 #==============================
-# This is the only step in local_setup.sh
-# not already done in the Spack stack
-# or here. Note that "wrf%intel" needs
+# Note that "wrf%intel" needs
 # to be relaxed to simply "wrf" because
 # of the potential for using oneapi,
 # intel, or another compiler.
-cd $install_dir
-cd conus_12km
+pushd conus_12km
 spack location -i wrf | xargs -I@ sh -c "ln -s @/test/em_real/* ."
+popd
+popd
 
 echo Completed deploying to cluster
+

@@ -1,0 +1,123 @@
+permissions:
+  - '*'
+
+jobs:
+  preprocessing:
+    steps:
+      - name: Hostname test
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${sshcmd} "hostname"
+      - name: Clone workflow code to resource
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          echo Remove old code and clone workflow to resource...
+          ${sshcmd} "mkdir -p ${{ inputs.wrf.workdir_root }}; \
+                     cd ${{inputs.wrf.workdir_root}}; \
+                     rm -rf weather-cluster-demo; \
+                     git clone https://github.com/parallelworks/weather-cluster-demo; \
+                     cd weather-cluster-demo; \
+                     git checkout ${{ inputs.wrf.wflow_code_branch }}"
+      - name: Install WRF
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          echo Installing WRF via Spack...
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                     ./install/deploy_to_node_from_buildcache.sh ${{ inputs.wrf.workdir_root}} ${{ inputs.spack.buildcache_uri }} ${{ inputs.wrf.rundir}}"
+      - name: Push to buildcache
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        if: ${{ 'TRUE' === inputs.spack.push_to_buildcache }}
+        run: |
+          echo Pushing artefacts to buildcache...
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                    ./install/push_to_buildcache.sh ${{ inputs.spack.buildcache_uri }}"
+  run_wrf:
+    needs:
+      - preprocessing
+    steps:
+      - name: Hostname test
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${sshcmd} "hostname"
+      - name: Launch WRF
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                    ./run_general.sh ${{ inputs.wrf.workdir_root}}/${{ inputs.wrf.rundir }}/conus_12km \
+                                     ${{ inputs.pwrl_host.num_worker_nodes }} \
+                                     ${{ inputs.pwrl_host.mpi_ranks_per_node }} \
+                                     ${{ inputs.pwrl_host.partition }} "
+      - name: Copy data off cluster to usercontainer
+        env:
+          scpcmd: scp -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${scpcmd}:${{ inputs.wrf.workdir_root }}/${{ inputs.wrf.rundir }}/conus_12km/conus-*.out ./ \
+    
+'on':
+  execute:
+    inputs:
+      pwrl_host:
+        type: group
+        label: Compute resource
+        items:
+          resource:
+            type: compute-clusters
+            label: Workflow host
+            include-workspace: false
+            tooltip: Resource to host the workflow
+          partition:
+            type: slurm-partitions
+            label: SLURM partition
+            resource: ${{ inputs.pwrl_host.resource }}
+            account: ${PW_USER}
+            tooltip: Partition to submit the interactive job. No selection uses the default partition.
+          mpi_ranks_per_node:
+            label: Number of MPI ranks per node
+            type: number
+            default: 4
+            tooltip: There are 6 OpenMP threads (CPU) per MPI rank.
+          num_worker_nodes:
+            label: Number of worker nodes
+            type: number
+            default: 8
+            tooltip: A total of 32 MPI ranks is required, e.g. 4 ranks/node x 8 nodes = 32.
+      spack:
+        type: group
+        label: Spack settings
+        items:
+          buildcache_uri:
+            label: Path/URI for buildcache
+            type: string
+            default: /spack-cache
+            tooltip: Select a local path on filesystem (can be mounted remote storage) or PW CLI bucket URI (e.g. pw://<user>/<bucket_name>).
+          push_to_buildcache:
+            label: Push build artifacts?
+            type: boolean
+            default: false
+            tooltip: Set to true if you want to save the compiled WRF binaries into the buildcache.
+      wrf:
+        type: group
+        label: WRF settings
+        items:
+          workdir_root:
+            label: Main working directory for everything
+            type: string
+            default: /home/${USER}/wrf
+            tooltip: Root directory for where workflow lives and runs
+          wflow_code_branch:
+            label: Workflow code branch
+            type: string
+            default: add-v3-workflow
+            tooltip: Specify the branch of tiegcm-digital-twin that you want to use for the workflow.
+          rundir:
+            label: Run directory
+            type: string
+            default: run01
+            tooltip: The working directory for a run inside main workdir, doubles as a runID.
+

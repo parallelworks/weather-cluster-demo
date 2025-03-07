@@ -9,18 +9,33 @@
 #==========================
 
 # The _name is used by Spack.
-# The _id corresponds to the bucket
-# available on the PW CLI.
+# The _uri corresponds to the bucket
+# identifier available on the PW CLI
+# or a local path on the filesystem.
+install_dir=${HOME}/wrf
+export SPACK_ROOT=${install_dir}/spack
 export SPACK_BUILDCACHE_NAME="wrf-cache"
-export SPACK_BUILDCACHE_ID="pw://sfgary/spackwrf"
+export SPACK_BUILDCACHE_URI=$1
 
 # Use the PW CLI to get the bucket credentials
 # and the $BUCKET_URI, used to set up the
-# buildcache below.
-eval `pw buckets get-token ${SPACK_BUILDCACHE_ID}`
+# buildcache below. If it is a local
+# system path no additional step is needed.
+# The credential gathering needs to be done
+# at run time since the credentials are short
+# term (valid for a few hours) while build
+# times can be much longer than this window.
+if [[ $SPACK_BUILDCACHE_URI == "pw://"* ]]; then
+    echo Getting bucket credentials from PW CLI for buildcache...
+    eval `pw buckets get-token ${SPACK_BUILDCACHE_URI}`
+else
+    echo Assuming buildcache is mounted on local filesystem.
+fi
 
 # "Start" Spack
 source ${SPACK_ROOT}/share/spack/setup-env.sh
+
+echo Assuming that buildcache is already added...
 
 # For each installed package, push to cache
 for ii in $(spack find --format "yyy {version} /{hash}" |
