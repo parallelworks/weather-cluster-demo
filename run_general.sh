@@ -32,6 +32,12 @@ export NUM_NODES=$2
 export NUM_MPI_TASK_PER_NODE=$3
 export PARTITION=$4
 
+echo Starting general launcher for WRF...
+echo RUNDIR is $RUNDIR
+echo NUM_NODES is $NUM_NODES
+echo NUM_MPI_TASK_PER_NODE is $NUM_MPI_TASK_PER_NODE
+echo PARTITION is $PARTITION
+
 # Source .bashrc because this sets up spack.
 source ~/.bashrc
 
