@@ -102,7 +102,14 @@ EOF
 
 # Run it!
 echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
-sbatch slurm-wrf-conus12km.sh
+# Launch job with sbatch and get job ID from sbatach output.
+slurm_job_id=$(sbatch slurm-wrf-conus12km.sh | awk '{print $4}')
+# Monitor running job until it finishes.
+while squeue -j $slurm_job_id | grep -q $job_id; do
+    squeue -u ${USER}
+    echo WRF job $slurm_job_id is still running. Wait 10 s and check again...
+    sleep 10
+done
 
 # Clean up
 #rm -f slurm-wrf-conus12km.sh
