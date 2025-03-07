@@ -113,7 +113,7 @@ jobs:
           wflow_code_branch:
             label: Workflow code branch
             type: string
-            default: add-v3-workflow
+            default: main
             tooltip: Specify the branch of tiegcm-digital-twin that you want to use for the workflow.
           rundir:
             label: Run directory
