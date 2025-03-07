@@ -111,6 +111,9 @@ while squeue -j $slurm_job_id | grep -q $slurm_job_id; do
     sleep 10
 done
 
+squeue -u ${USER}
+echo WRF job $slurm_job_id is complete!
+
 # Clean up
 #rm -f slurm-wrf-conus12km.sh
 
