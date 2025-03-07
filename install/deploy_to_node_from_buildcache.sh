@@ -176,7 +176,7 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 # WORKING HERE:
 # If this is 512, Intel OneAPI fails to install
 # lz4 is failing to install with any value of this setting.
-#spack config add config:install_tree:padded_length:256
+spack config add config:install_tree:padded_length:128
 
 #=============================
 echo Adding buildcache...
