@@ -53,6 +53,11 @@ jobs:
                                      ${{ inputs.pwrl_host.num_worker_nodes }} \
                                      ${{ inputs.pwrl_host.mpi_ranks_per_node }} \
                                      ${{ inputs.pwrl_host.partition }} "
+      - name: Copy data off cluster to usercontainer
+        env:
+          scpcmd: scp -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${scpcmd}:${{ inputs.wrf.workdir_root }}/${{ inputs.wrf.rundir }}/conus_12km/conus-*.out ./ \
     
 'on':
   execute:
