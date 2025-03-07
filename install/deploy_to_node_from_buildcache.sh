@@ -178,7 +178,7 @@ source /opt/rh/gcc-toolset-${gcc_version}/enable
 # lz4 is failing to install with any reasonable 
 # value of this setting (Spack paths tend to be
 # about 100 characters including the hash).
-#spack config add config:install_tree:padded_length:128
+spack config add config:install_tree:padded_length:256
 
 #=============================
 echo Adding buildcache...
@@ -239,6 +239,7 @@ spack load intel-oneapi-compilers
 spack compiler find
 spack unload
 spack install -j 16 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%oneapi
+spack install -j 16 --no-check-signature lz4@1.9.4%oneapi
 spack install -j 16 --no-check-signature wrf@4.5.1%oneapi build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
 
 # This does not work by itself without attempting
