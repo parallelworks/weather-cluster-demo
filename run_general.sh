@@ -105,5 +105,5 @@ echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 sbatch slurm-wrf-conus12km.sh
 
 # Clean up
-rm -f slurm-wrf-conus12km.sh
+#rm -f slurm-wrf-conus12km.sh
 
