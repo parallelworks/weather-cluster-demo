@@ -105,7 +105,7 @@ echo; echo "Running sbatch slurm-wrf-conus12km.sh from ${PWD}"
 # Launch job with sbatch and get job ID from sbatach output.
 slurm_job_id=$(sbatch slurm-wrf-conus12km.sh | awk '{print $4}')
 # Monitor running job until it finishes.
-while squeue -j $slurm_job_id | grep -q $job_id; do
+while squeue -j $slurm_job_id | grep -q $slurm_job_id; do
     squeue -u ${USER}
     echo WRF job $slurm_job_id is still running. Wait 10 s and check again...
     sleep 10
