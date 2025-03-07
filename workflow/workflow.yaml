@@ -13,9 +13,10 @@ jobs:
         env:
           sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
         run: |
-          echo Cloning workflow code to resource...
+          echo Remove old code and clone workflow to resource...
           ${sshcmd} "mkdir -p ${{ inputs.wrf.workdir_root }}; \
                      cd ${{inputs.wrf.workdir_root}}; \
+                     rm -rf weather-cluster-demo; \
                      git clone https://github.com/parallelworks/weather-cluster-demo; \
                      cd weather-cluster-demo; \
                      git checkout ${{ inputs.wrf.wflow_code_branch }}"
