@@ -1,5 +1,22 @@
 # weather-cluster-demo/genaral_install
 
+The text below is out of date and refers to a more manual
+build process. The current code at the level of this directory
+basically works in two steps - deploy (which assumes a buildcache
+and if it's not present, builds from scratch) and, optionally, 
+push to the buildcache (in case you want to preserve the results
+of a buildcache-less deploy for later deployments).
+
+There's some error in the lz4 package that does not allow it
+to be installed as part of the long automated build while other 
+packages are being installed. The only solution I've found so far
+is to run the deploy step one time - which sets up Spack but fails
+to install lz4. Then, in that same Spack environment, simply
+`spack install lz4@1.9.4%oneapi` one time manually and then
+rerun the deploy step, either manually or as part of a second
+workflow run. For whatever reason, that one manual invokation
+of `spack install lz4...` does work.
+
 ## Motivation
 
 PW V2 cloud clusters are designed to autoprovision/setup the
