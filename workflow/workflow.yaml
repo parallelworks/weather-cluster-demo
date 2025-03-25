@@ -53,6 +53,12 @@ jobs:
                                      ${{ inputs.pwrl_host.num_worker_nodes }} \
                                      ${{ inputs.pwrl_host.mpi_ranks_per_node }} \
                                      ${{ inputs.pwrl_host.partition }} "
+      - name: Prepare output archive
+        env:
+          sshcmd: ssh -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
+        run: |
+          ${sshcmd} "cd ${{ inputs.wrf.workdir_root }}/weather-cluster-demo; \
+                    ./workflow/clean.sh ${{ inputs.wrf.workdir_root}}/${{ inputs.wrf.rundir }}/conus_12km "
       - name: Copy data off cluster to usercontainer
         env:
           scpcmd: scp -o StrictHostKeyChecking=no ${{ inputs.pwrl_host.resource.ip }}
