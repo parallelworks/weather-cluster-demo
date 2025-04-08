@@ -57,8 +57,32 @@ echo Install newer version of gcc...
 
 gcc_version="11"
 gcc_version_full="11.2.1"
-oneapi_version="2021.1.2"
-oneapi_mpi_version="2021.1.1"
+
+spack_version="0.23.1"
+
+# WRF 3.9.1.1 may have difficulty to OneAPI?
+# so also specify an intel version.
+# Tried the following versions of OneAPI:
+# 2021.1.2 - oldest available in Spack, still breaks out intel and oneapi
+#            Fails with pnetcdf (%intel) and wrf (%oneapi)
+# To try: 
+# 2023.2.3 - oldest version that still has icc/ifort instead of icx
+# https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-c-compiler-release-notes.html
+#
+# 2024.0.2 - Corresponds to highest version in Spack v0.22.2. Canot use 
+# intel-oneapi-compilers-classic OOB because intel-oneapi-compilers
+# installs into a "2024.0" directory but *-classic attempts to
+# try to find "2024.0.2" which does not exist and fail.
+oneapi_version="2023.2.3"
+
+# Most current version for Spack v0.22.2
+#oneapi_mpi_version="2021.12.1"
+
+# Most current version for Spack v0.23.1
+oneapi_mpi_version="2021.15.0"
+
+# Intel classic attempt
+intel_version="2021.11.1"
 
 # Use these for CentOS7
 #sudo yum install -y devtoolset-${gcc_version}-gcc
@@ -91,7 +115,7 @@ mkdir -p $RUN_DIR
 echo Downloading spack...
 #==============================
 
-git clone -b v0.22.2 -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
+git clone -b v${spack_version} -c feature.manyFiles=true https://github.com/spack/spack $SPACK_ROOT
 
 #==============================
 echo Set up Spack environment...
@@ -256,10 +280,19 @@ sleep 10
 # Let's add-concretize-install the compilers first, then WRF after we find the
 # compilers.
 spack install --add -j 16 --no-check-signature patchelf%gcc@${gcc_version_full}
+
+# Intel OneAPI (required for Intel Classic)
 spack install --add -j 16 --no-check-signature intel-oneapi-compilers@${oneapi_version}
 spack load intel-oneapi-compilers@${oneapi_version}
 spack compiler find
 spack unload
+
+# Intel Classic - does not work OOB with Spack -v 0.22.2, see note above.
+#spack install --add -j 16 --no-check-signature intel-oneapi-compilers-classic@${intel_version}
+#spack load intel-oneapi-compilers-classic
+#spack compiler find
+#spack unload
+
 spack install --add -j 16 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%intel #oneapi@${oneapi_version}
 
 # Same strange bug as with WRF4.5 - lz does not install when automated, 
