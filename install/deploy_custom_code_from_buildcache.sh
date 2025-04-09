@@ -282,18 +282,25 @@ sleep 10
 spack install --add -j 16 --no-check-signature patchelf%gcc@${gcc_version_full}
 
 # Intel OneAPI (required for Intel Classic)
-spack install --add -j 16 --no-check-signature intel-oneapi-compilers@${oneapi_version}
-spack load intel-oneapi-compilers@${oneapi_version}
-spack compiler find
-spack unload
-
-# Intel Classic - does not work OOB with Spack -v 0.22.2, see note above.
-#spack install --add -j 16 --no-check-signature intel-oneapi-compilers-classic@${intel_version}
-#spack load intel-oneapi-compilers-classic
+#spack install --add -j 16 --no-check-signature intel-oneapi-compilers #@${oneapi_version}
+#spack load intel-oneapi-compilers #@${oneapi_version}
 #spack compiler find
 #spack unload
 
-spack install --add -j 16 --no-check-signature intel-oneapi-mpi@${oneapi_mpi_version}%intel #oneapi@${oneapi_version}
+# Intel Classic - does not work OOB with Spack -v 0.22.2, see note above.
+# It's possible it does work with v0.22.2 BUT - you shouldn't attempt to install
+# intel-oneapi-compilers-classic alongside manually selected intel-oneapi-compilers.
+# The *-classic install depdends on a specific version of intel-oneapi-compilers
+# (for Spack v0.23.1, this is OneAPI 2023.2.4). Installing *-classic tends to fail
+# for opaque reasons if you preinstall other versions of intel-oneapi-compilers!
+spack install --add -j 16 --no-check-signature intel-oneapi-compilers-classic #@${intel_version}
+spack load intel-oneapi-compilers-classic
+spack compiler find
+spack unload
+
+# WORKING HERE - Consider removing %intel? - Spack reports
+# duplicate paths for libfabric and mpi/lib
+spack install --add -j 16 --no-check-signature intel-oneapi-mpi #@${oneapi_mpi_version}%intel #oneapi@${oneapi_version}
 
 # Same strange bug as with WRF4.5 - lz does not install when automated, 
 # but installs manually. So:
@@ -308,14 +315,15 @@ spack install --add -j 16 --no-check-signature lz4@1.9.4%intel #oneapi@${oneapi_
 
 echo Add WRF...
 #spack add wrf@3.9.1.1%oneapi@${oneapi_version} build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
-spack add wrf@3.9.1.1%intel build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+# Some packages don't compile with Intel Classic, so force use of OneAPI.
+spack add wrf@3.9.1.1%intel build_type=dm+sm +pnetcdf ^intel-oneapi-mpi ^diffutils@3.10%oneapi ^gettext@0.22.5%oneapi
 
 echo Run spack develop...
 # Instead of right to spack install here, first use spack develop
 # Check in spack.yaml for the dev_path for this package.
 # Note that spack develop by itself only clones the source code;
 # you must add the spec to the environment, too (see step above).
-spack develop wrf@3.9.1.1%intel build_type=dm+sm +pnetcdf ^intel-oneapi-mpi
+spack develop wrf@3.9.1.1%intel build_type=dm+sm +pnetcdf ^intel-oneapi-mpi ^diffutils@3.10%oneapi ^gettext@0.22.5%oneapi
 
 echo Env concretization...
 # Concretize the environment
